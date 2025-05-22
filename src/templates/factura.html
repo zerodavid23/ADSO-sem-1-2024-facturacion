@@ -10,8 +10,18 @@
         id="correo"
         placeholder="ingrese un correo"
         required
+        onblur="ValidarCorreo()"
       />
     </div>
+    <span
+      class="alert alert-danger"
+      role="alert"
+      id="ErrorCorreo"
+      style="display: none"
+    >
+      por favor ingrese un correo valido</span
+    >
+
     <div class="form-group">
       <label for="usuario">nombre de usuario</label>
       <input
@@ -20,9 +30,17 @@
         id="usuario"
         placeholder="ingrese un usuario"
         required
+        onblur="ValidarUsuario()"
       />
     </div>
-
+    <span
+      class="alert alert-danger"
+      role="alert"
+      id="ErrorUsuario"
+      style="display: none"
+    >
+      por favor ingrese un usuairio valido</span
+    >
     <div class="form-group col-md-6">
       <label for="area">¿cual es su area?</label>
       <select id="area" class="form-control" required>
@@ -36,8 +54,22 @@
   <div class="form-row">
     <div class="form-group col-md-3">
       <label for="codigoproduct">codigo producto</label>
-      <input type="text" class="form-control" id="codigoproduct" />
+      <input
+        type="text"
+        class="form-control"
+        id="codigoproduct"
+        onblur="ValidarCodigo()"
+      />
     </div>
+    <span
+      class="alert alert-danger"
+      role="alert"
+      id="ErrorCodigo"
+      style="display: none"
+    >
+      por favor solo ingrese el codigo del producto sin caracteres especiales o
+      espacios</span
+    >
     <button type="button" class="btn btn-success" id="agregarproducto">
       agregarproducto
     </button>
@@ -169,5 +201,57 @@
       document.getElementById("factura").style.display = "block";
     });
 </script>
+<script type="text/javascript">
+  function ValidarCorreo() {
+    console.log("entro a la funcion");
+    let CampoCorreo = document.getElementById("correo");
+    let ValorCorreo = CampoCorreo.value;
+    let ErrorCorreo = document.getElementById("ErrorCorreo");
+    console.log("el valor escrtio es: " + ValorCorreo);
+    var expresionregular = new RegExp("[^\\s@]+@[^\\s@]+\\.[^\\s@]+");
+    if (expresionregular.test(ValorCorreo)) {
+      console.log("el campo cumple la validacion");
+      ErrorCorreo.style.display = "none";
+    } else {
+      console.log("el campo no cumple la validacion");
+      ErrorCorreo.style.display = "block";
+    }
+  }
+</script>
 
+<script type="text/javascript">
+  function ValidarUsuario() {
+    console.log("entro a la funcion");
+    let CampoUsuario = document.getElementById("usuario");
+    let ValorUsuario = CampoUsuario.value;
+    let ErrorUsuario = document.getElementById("ErrorUsuario");
+    console.log("el valor escrtio es: " + ValorUsuario);
+    var expresionregular = new RegExp("[a-zA-Z][a-zA-Z0-9_]{3,19}");
+    if (expresionregular.test(ValorUsuario)) {
+      console.log("el campo cumple la validacion");
+      ErrorUsuario.style.display = "none";
+    } else {
+      console.log("el campo no cumple la validacion");
+      ErrorUsuario.style.display = "block";
+    }
+  }
+</script>
+
+<script type="text/javascript">
+  function ValidarCodigo() {
+    console.log("entro a la funcion");
+    let CampoCodigo = document.getElementById("codigoproduct");
+    let ValorCodigo = CampoCodigo.value;
+    let ErrorCodigo = document.getElementById("ErrorCodigo");
+    console.log("el valor escrtio es: " + ValorCodigo);
+    var expresionregular = new RegExp("\\d{1,6}");
+    if (expresionregular.test(ValorCodigo)) {
+      console.log("el campo cumple la validacion");
+      ErrorCodigo.style.display = "none";
+    } else {
+      console.log("el campo no cumple la validacion");
+      ErrorCodigo.style.display = "block";
+    }
+  }
+</script>
 {%endblock contenido%}

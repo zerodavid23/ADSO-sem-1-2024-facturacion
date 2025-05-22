@@ -1,22 +1,41 @@
 {%extends 'layout.html'%} {%block contenido%}
 
 <h2>Crear Producto</h2>
-<form action="guardar_productos.php" method="post">
+<form id="ingresar_form">
   <div class="form-row">
     <div class="form-group col-md-6">
-      <label for="descripcion">Descripción</label>
+      <label for="nombre">nombre del producto</label>
       <input
         type="text"
+        id="nombre"
         class="form-control"
-        name="descripcion"
-        placeholder="Describa el producto (dato único)"
+        name="nombre"
+        placeholder="ingrese el nombre del producto"
         required
+        onblur="ValidarNombre()"
       />
+      <span class="alert alert-danger" role="alert" id ="ErrorNombre" style="display:none"> el nombre no debe incluir caracteres especiales solo letras y espacios</span>
+
+      
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="descripcion">Descripción</label>
+          <input
+            type="text"
+            id="descripcion"
+            class="form-control"
+            name="descripcion"
+            placeholder="ingrese una descripcion del producto"
+            required
+          
+          />
+         
     </div>
     <div class="form-group col-md-6">
       <label for="cantidad_inventario">Cantidad Inventario</label>
       <input
         type="number"
+        id="cantidad_inventario"
         class="form-control"
         name="cantidad_inventario"
         required
@@ -26,17 +45,20 @@
       <label for="precio_unitario">Precio Unitario</label>
       <input
         type="number"
+        id="precio_unitario"
         class="form-control"
         name="precio_unitario"
         required
+        onblur="ValidarPrecio()"
       />
     </div>
+    <span class="alert alert-danger" role="alert" id ="ErrorPrecio" style="display:none">el precio no es valido, use un formato como 123 o 123.45 sin espacios</span>
   </div>
 
   <div class="form-row">
     <div class="form-group col-md-4">
       <label for="unidad_medida">Unidad de Medida</label>
-      <select name="unidad_medida" class="form-control">
+      <select name="unidad_medida" id="unidad_medida" class="form-control">
         <option selected>Por favor seleccione...</option>
         <option value="GR">GR</option>
         <option value="UND">UND</option>
@@ -54,4 +76,92 @@
   </div>
   <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
+
+<div
+  id="mensajeproducto"
+  style="
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid green;
+    color: green;
+  "
+>
+  <p><strong>el produco se creo correctamente.</strong></p>
+  <p>datos del producto creado:</p>
+  <ul>
+    <li><strong>descripcion</strong> <span id="mostrardescripcion"></span></li>
+    <li>
+      <strong>cantidad:</strong> <span id="mostrarcantidad_inventario"></span>
+    </li>
+    <li><strong>precio:</strong> <span id="mostrarprecio_unitario"></span></li>
+    <li>
+      <strong>tipo_de_medida:</strong> <span id="mostrarunidad_medida"></span>
+    </li>
+    <li><strong>categoria:</strong> <span id="mostrarcategoria"></span></li>
+  </ul>
+</div>
+
+<script>
+  document
+    .getElementById("ingresar_form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      let descripcion = document.getElementById("descripcion").value;
+      let cantidad = document.getElementById("cantidad_inventario").value;
+      let precio = document.getElementById("precio_unitario").value;
+      let tipo_de_medida = document.getElementById("unidad_medida").value;
+      let categoria = document.getElementById("categoria").value;
+
+      document.getElementById("mostrardescripcion").innerText = descripcion;
+      document.getElementById("mostrarcantidad_inventario").innerText =
+        cantidad;
+      document.getElementById("mostrarprecio_unitario").innerText = precio;
+      document.getElementById("mostrarunidad_medida").innerText =
+        tipo_de_medida;
+      document.getElementById("mostrarcategoria").innerText = categoria;
+
+      document.getElementById("mensajeproducto").style.display = "block";
+
+      document.getElementById("ingresar_form").reset();
+    });
+</script>
+<script type="text/javascript">
+function ValidarNombre(){
+  console.log("entro a la funcion");
+  let CampoNombre = document.getElementById("nombre");
+  let ValorNombre =CampoNombre.value;
+  let ErrorNombre = document.getElementById("ErrorNombre");
+  console.log("el valor escrtio es: " + ValorNombre);
+  var expresionregular = new RegExp("[a-zA-Z\s]+")
+  if(expresionregular.test(ValorNombre)) { 
+  console.log("el campo cumple la validacion");
+  ErrorNombre.style.display = 'none';
+  }else{
+    console.log("el campo no cumple la validacion");
+    ErrorNombre.style.display = 'block';
+  }
+}
+
+</script>
+
+<script type="text/javascript">
+  function ValidarPrecio(){
+    console.log("entro a la funcion");
+    let CampoPrecio = document.getElementById("precio_unitario");
+    let ValorPrecio =CampoPrecio.value;
+    let ErrorPrecio = document.getElementById("ErrorPrecio");
+    console.log("el valor escrtio es: " + ValorPrecio);
+    var expresionregular = new RegExp("\\d+(\\.\\d{1,2})?")
+    if(expresionregular.test(ValorPrecio)) { 
+    console.log("el campo cumple la validacion");
+    ErrorPrecio.style.display = 'none';
+    }else{
+      console.log("el campo no cumple la validacion");
+      ErrorPrecio.style.display = 'block';
+    }
+  }
+  
+  </script>
 {%endblock contenido%}
