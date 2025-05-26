@@ -24,11 +24,13 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
-    <title>{%block titulo%} {{titulo }} {%endblock titulo%}</title>
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav
+      class="navbar navbar-expand-lg navbar-light"
+      style="background-color: #329be6b6"
+    >
       <a class="navbar-brand" href="{{ url_for('index') }}">FACT-3000</a>
       <button
         class="navbar-toggler"
@@ -46,7 +48,11 @@
         <ul class="navbar-nav mr-auto">
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="btn btn-secondary dropdown-toggle"
+              style="
+                background-color: rgb(30, 106, 219);
+                border: 2px solid rgb(0, 102, 255);
+              "
               href="#"
               id="navbarDropdown"
               role="button"
@@ -71,24 +77,100 @@
             </div>
           </li>
         </ul>
+        <style>
+          .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #00a0fd3f;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease;
+            padding: 20px;
+            z-index: 1050;
+          }
 
-        <button
-          type="button"
-          class="btn btn-primary"
-          style="margin-right: 10px"
-          onclick="window.location.href='{{ url_for('formulario_usuario') }}';"
-        >
-          ingresar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';"
-        >
-          registrarse
-        </button>
+          .sidebar.show {
+            right: 0;
+          }
+
+          .toggle-btn {
+            cursor: pointer;
+          }
+
+          .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+          }
+        </style>
+        <img
+          src="{{ url_for('static', filename='usuario.jpg') }}"
+          alt="Abrir menú"
+          width="40"
+          class="toggle-btn"
+          onclick="toggleSidebar()"
+          style="position: fixed; top: 10px; right: 20px; z-index: 1100"
+        />
+        <div id="sidebar" class="sidebar">
+          <button class="close-btn" onclick="toggleSidebar()">✖</button>
+          <h5>Opciones de incio</h5>
+          <button
+            type="button"
+            class="btn btn-primary"
+            style="margin-top: 30px"
+            width="40"
+            onclick="window.location.href='{{ url_for('formulario_usuario') }}';"
+          >
+            ingresar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            style="margin-top: 30px"
+            width="40"
+            onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';"
+          >
+            registrarse
+          </button>
+        </div>
       </div>
     </nav>
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const image = document.querySelector(".toggle-btn");
+
+        sidebar.classList.toggle("show");
+
+        if (sidebar.classList.contains("show")) {
+          image.style.display = "none";
+        } else {
+          image.style.display = "block";
+        }
+      }
+
+      document.addEventListener("click", function (event) {
+        const sidebar = document.getElementById("sidebar");
+        const image = document.querySelector(".toggle-btn");
+
+        if (
+          sidebar.classList.contains("show") &&
+          !sidebar.contains(event.target) &&
+          !image.contains(event.target)
+        ) {
+          sidebar.classList.remove("show");
+          image.style.display = "block";
+        }
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {%block contenido %} {%endblock%}
   </body>
 </html>
