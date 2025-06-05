@@ -1,7 +1,8 @@
-{%extends 'layout.html'%} {%block contenido%}
+{%extends 'layout.html'%} 
+{%block contenido%}
 
 <h2>Crear Producto</h2>
-<form id="ingresar_form">
+<form id="ingresar_form" method="POST">
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="nombre">nombre del producto</label>
@@ -66,7 +67,7 @@
     </div>
     <div class="form-group col-md-4">
       <label for="categoria">Categoria</label>
-      <select id="categoria" class="form-control">
+      <select id="categoria" name="categoria" class="form-control">
         <option selected>Por favor seleccione...</option>
         <option value="1">Alimentos</option>
         <option value="2">Ropa</option>
@@ -77,56 +78,6 @@
   <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
 
-<div
-  id="mensajeproducto"
-  style="
-    display: none;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid green;
-    color: green;
-  "
->
-  <p><strong>el produco se creo correctamente.</strong></p>
-  <p>datos del producto creado:</p>
-  <ul>
-    <li><strong>descripcion</strong> <span id="mostrardescripcion"></span></li>
-    <li>
-      <strong>cantidad:</strong> <span id="mostrarcantidad_inventario"></span>
-    </li>
-    <li><strong>precio:</strong> <span id="mostrarprecio_unitario"></span></li>
-    <li>
-      <strong>tipo_de_medida:</strong> <span id="mostrarunidad_medida"></span>
-    </li>
-    <li><strong>categoria:</strong> <span id="mostrarcategoria"></span></li>
-  </ul>
-</div>
-
-<script>
-  document
-    .getElementById("ingresar_form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      let descripcion = document.getElementById("descripcion").value;
-      let cantidad = document.getElementById("cantidad_inventario").value;
-      let precio = document.getElementById("precio_unitario").value;
-      let tipo_de_medida = document.getElementById("unidad_medida").value;
-      let categoria = document.getElementById("categoria").value;
-
-      document.getElementById("mostrardescripcion").innerText = descripcion;
-      document.getElementById("mostrarcantidad_inventario").innerText =
-        cantidad;
-      document.getElementById("mostrarprecio_unitario").innerText = precio;
-      document.getElementById("mostrarunidad_medida").innerText =
-        tipo_de_medida;
-      document.getElementById("mostrarcategoria").innerText = categoria;
-
-      document.getElementById("mensajeproducto").style.display = "block";
-
-      document.getElementById("ingresar_form").reset();
-    });
-</script>
 <script type="text/javascript">
 function ValidarNombre(){
   console.log("entro a la funcion");
