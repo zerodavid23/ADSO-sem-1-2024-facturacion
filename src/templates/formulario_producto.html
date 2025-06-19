@@ -5,7 +5,7 @@
 <form id="ingresar_form" method="POST">
   <div class="form-row">
     <div class="form-group col-md-6">
-      <label for="nombre">nombre del producto</label>
+      <label for="nombre">nombre del producto</label> 
       <input
         type="text"
         id="nombre"
@@ -14,8 +14,12 @@
         placeholder="ingrese el nombre del producto"
         required
         onblur="ValidarNombre()"
+        {% if producto_almacenar %} value="{{ producto_almacenar.nombre }}"{% endif %}
       />
-      <span class="alert alert-danger" role="alert" id ="ErrorNombre" style="display:none"> el nombre no debe incluir caracteres especiales solo letras y espacios</span>
+      {% if errornomb %}
+      <span class="alert alert-danger" role="alert" id ="ErrorNombre" 
+      style="display:block;">{{ errornomb }}</span>
+      {% endif %}
 
       
       <div class="form-row">
@@ -26,11 +30,18 @@
             id="descripcion"
             class="form-control"
             name="descripcion"
+            {% if producto_almacenar %} value="{{ producto_almacenar.descripcion }}"{% endif %}
             placeholder="ingrese una descripcion del producto"
+            onblur="ValidarDescripcion()"
             required
+
           
           />
-         
+          {% if errordescr %}
+          <span class="alert alert-danger" role="alert" id ="ErrorDescripcion"
+          style="display: block;"> {{ errordescr }} </span>
+          {% endif %} 
+
     </div>
     <div class="form-group col-md-6">
       <label for="cantidad_inventario">Cantidad Inventario</label>
@@ -40,6 +51,7 @@
         class="form-control"
         name="cantidad_inventario"
         required
+        {% if producto_almacenar %} value="{{ producto_almacenar.cantidad_inventario }}"{% endif %}
       />
     </div>
     <div class="form-group col-md-6">
@@ -51,9 +63,11 @@
         name="precio_unitario"
         required
         onblur="ValidarPrecio()"
+        {% if producto_almacenar %} value="{{ producto_almacenar.precio_unitario }}"{% endif %}
       />
     </div>
-    <span class="alert alert-danger" role="alert" id ="ErrorPrecio" style="display:none">el precio no es valido, use un formato como 123 o 123.45 sin espacios</span>
+    <span class="alert alert-danger" role="alert" id ="ErrorPrecio" 
+    style="display:none">el precio no es valido, use un formato como 123 o 123.45 sin espacios</span>
   </div>
 
   <div class="form-row">
@@ -69,9 +83,12 @@
       <label for="categoria">Categoria</label>
       <select id="categoria" name="categoria" class="form-control">
         <option selected>Por favor seleccione...</option>
-        <option value="1">Alimentos</option>
-        <option value="2">Ropa</option>
-        <option value="3">bebidas</option>
+        
+        {% for categoria in categorias %}
+        
+          <option value="{{categoria.id}}">{{categoria.nombre_categoria}}</option>
+        
+        {% endfor %}  
       </select>
     </div>
   </div>
@@ -95,6 +112,25 @@ function ValidarNombre(){
   }
 }
 
+</script>
+
+<script type="text/javascript">
+function ValidarDescripcion() {
+  console.log("Entró a la función de validación de descripción");
+  
+  let CampoDescripcion = document.getElementById("descripcion");
+  let ValorDescripcion = CampoDescripcion.value;
+  let ErrorDescripcion = document.getElementById("ErrorDescripcion");
+  console.log("El valor escrito es: " + ValorDescripcion);
+  var expresionregular = new RegExp("^[a-zA-Z0-9.,¡!¿?()\"'\\s]+$");
+  if (expresionregular.test(ValorDescripcion) && ValorDescripcion.trim() !== "") {
+    console.log("El campo cumple la validación");
+    ErrorDescripcion.style.display = 'none';
+  } else {
+    console.log("El campo no cumple la validación");
+    ErrorDescripcion.style.display = 'block';
+  }
+}
 </script>
 
 <script type="text/javascript">

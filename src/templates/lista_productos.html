@@ -1,106 +1,52 @@
-{%extends 'layout.html'%}
+{%extends 'layout.html'%} {%block contenido%}
 
-{%block contenido%}
-
-</form>
-</div>
-</nav>
 <h2>Listado de Productos</h2>
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Descripción</th>
+      <th scope="col">Id</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Descripcion</th>
       <th scope="col">Cantidad Inventario</th>
       <th scope="col">Precio</th>
       <th scope="col">Unidad de Medida</th>
-      <th scope="col">Categoria</th>
+      <th scope="col">categoria</th>
       <th scope="col">Acciones</th>
     </tr>
   </thead>
   <tbody>
+    {% for producto in productos %}
     <tr>
-      <th scope="row">1</th>
-      <td>Pan tajado bolsa 200 grs</td>
-      <td>100</td>
-      <td>5000</td>
-      <td>Unidad</td>
-      <td>Alimentos</td>
+      <th scope="row">{{producto.id_producto}}</th>
+      <td>{{producto.nombre}}</td>
+      <td>{{producto.descripcion}}</td>
+      <td>{{producto.cantidad_inventario}}</td>
+      <td>{{producto.precio_unitario}}</td>
+      <td>{{producto.unidad_medida}}</td>
+      <td>{{producto.categoria}}</td>
+
       <td>
-        <button type="button" class="btn btn-success"
-          onclick="window.location.href='formulario_producto.html'">Editar</button>
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="window.location.href='formulario_producto.html'"
+        >
+          Editar
+        </button>
 
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Borrar</button>
-
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick="eliminarFila(this)"
+        >
+          Borrar
+        </button>
       </td>
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Carne cerdo costilla</td>
-      <td>10000</td>
-      <td>32</td>
-      <td>GRS</td>
-      <td>Alimentos</td>
-      <td>
-        <button type="button" class="btn btn-success"
-          onclick="window.location.href='formulario_producto.html'">Editar</button>
-
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Borrar</button>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>chaqueta cuerina</td>
-      <td>40</td>
-      <td>79900</td>
-      <td>unidad</td>
-      <td>Ropa</td>
-      <td>
-        <button type="button" class="btn btn-success"
-          onclick="window.location.href='formulario_producto.html'">Editar</button>
-
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Borrar</button>
-    </tr>
-    <tr>
-      <th scope="row">4</th>
-      <td>zapatos deportivos</td>
-      <td>20</td>
-      <td>43900</td>
-      <td>unidad</td>
-      <td>Ropa</td>
-      <td>
-        <button type="button" class="btn btn-success"
-          onclick="window.location.href='formulario_producto.html'">Editar</button>
-
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Borrar</button>
-    </tr>
-    <tr>
-      <th scope="row">5</th>
-      <td>energisante pantera</td>
-      <td>100</td>
-      <td>4500</td>
-      <td>unidad</td>
-      <td>bebidas</td>
-      <td>
-        <button type="button" class="btn btn-success"
-          onclick="window.location.href='formulario_producto.html'">Editar</button>
-
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Borrar</button>
-    </tr>
-    <tr>
-      <th scope="row">6</th>
-      <td>soda hatsu</td>
-      <td>60</td>
-      <td>5500</td>
-      <td>unidad</td>
-      <td>bebidas</td>
-      <td>
-        <button type="button" class="btn btn-success"
-          onclick="window.location.href='formulario_producto.html'">Editar</button>
-
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Borrar</button>
+    {%endfor%}
   </tbody>
 </table>
+
 <script>
   function eliminarFila(boton) {
     if (confirm("¿Seguro que deseas eliminar este producto?")) {

@@ -30,7 +30,13 @@ def index():
 
 @app.route('/lista_productos')
 def lista_productos():
-    return render_template('lista_productos.html',titulo='lista de productos')
+    try:
+        productos = Producto.traer_productos()
+        return render_template('lista_productos.html',titulo='lista de productos',productos=productos)
+    except: 
+            return render_template('lista_productos.html',titulo='Error de conexión a la base de datos')
+
+    
 
 @app.route('/formulario_usuario')
 def formulario_usuario():
@@ -40,19 +46,30 @@ def formulario_usuario():
 
 @app.route('/formulario_producto', methods =['GET','POST'])
 def formulario_producto():
+    categorias = Categoria.traer_categorias()
+
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         descripcion = request.form.get('descripcion')
+        producto_repetido = session.query(Producto).filter(Producto.nombre == nombre).first()  
+        producto_repetido = session.query(Producto).filter(Producto.descripcion == descripcion).first()            
         cantidad_inventario = request.form.get('cantidad_inventario')
         precio_unitario = request.form.get('precio_unitario')
         unidad_medida = request.form.get('unidad_medida')
         categoria = request.form.get('categoria')
-        
-        producto = Producto(nombre,descripcion,cantidad_inventario,precio_unitario,unidad_medida,categoria)
-        Producto.crear_producto(producto) 
-         
+        producto_almacenar = Producto(nombre,descripcion,cantidad_inventario,precio_unitario,unidad_medida,categoria)
+    
+        if producto_repetido:
+            return render_template('formulario_producto.html',titulo='error: producto repetido',
+                                   errornomb ="el nombre no se puede repetir", errordescr ="la descripcion no se puede repetir"
+                                   ,categorias = categorias,producto_almacenar=producto_almacenar)
+        try:
+            Producto.crear_producto(producto_almacenar) 
 
-    return render_template('formulario_producto.html',titulo='registro de productos')
+        
+        except:
+            return render_template('formulario_producto.html',titulo='error al registrar en la base de datos')        
+    return render_template('formulario_producto.html',titulo='registro de productos',categorias = categorias)
 
 
 @app.route('/formulario_Nue_usuario')
@@ -88,10 +105,24 @@ class Producto (Base):
         session.commit()
         return producto
     
+    def traer_productos():
+        productos = session.query(Producto).all()
+        return productos
+    
 
 class Categoria (Base):
-     __tablename__="Categoria"
-     id = Column(Integer, primary_key=True)
-     nombre_categoria = Column(String(300),unique=True,nullable =False)
+    __tablename__="Categoria"
+    id = Column(Integer, primary_key=True)
+    nombre_categoria = Column(String(300),unique=True,nullable =False)
+
+     
+    def __init__(self, nombre_categoria):
+        self.nombre_categoria = nombre_categoria
+
+    def traer_categorias():
+        categorias = session.query(Categoria).all()
+        return categorias
+ 
+
 
 Base.metadata.create_all(engine)  
