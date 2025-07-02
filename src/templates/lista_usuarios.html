@@ -1,35 +1,33 @@
-{%extends 'layout.html'%} {%block contenido%}
-
+{%extends'layout.html' %} {%block contenido%}
 <h2>Listado de Productos</h2>
 <table class="table">
   <thead class="thead-dark">
     <tr>
       <th scope="col">Id</th>
+
+      <th scope="col">correo</th>
       <th scope="col">Nombre</th>
-      <th scope="col">Descripcion</th>
-      <th scope="col">Cantidad Inventario</th>
-      <th scope="col">Precio</th>
-      <th scope="col">Unidad de Medida</th>
+      <th scope="col">usuario</th>
+      <th scope="col">contraseña</th>
       <th scope="col">categoria</th>
       <th scope="col">Acciones</th>
     </tr>
   </thead>
   <tbody>
-    {% for producto in productos %}
+    {% for usuario in usuarios %}
     <tr>
-      <th scope="row">{{producto.id_producto}}</th>
-      <td>{{producto.nombre}}</td>
-      <td>{{producto.descripcion}}</td>
-      <td>{{producto.cantidad_inventario}}</td>
-      <td>{{producto.precio_unitario}}</td>
-      <td>{{producto.unidad_medida}}</td>
-      <td>{{producto.categoria}}</td>
+      <th scope="row">{{usuario.id_usuario}}</th>
+      <td>{{usuario.correo}}</td>
+      <td>{{usuario.nombre_persona}}</td>
+      <td>{{usuario.nombre_usuario}}</td>
+      <td>{{usuario.contraseña}}</td>
+      <td>{{usuario.categoria}}</td>
 
       <td>
         <button
           type="button"
           class="btn btn-success"
-          onclick="window.location.href='{{ url_for('formulario_producto') }}';"
+          onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';"
         >
           Editar
         </button>

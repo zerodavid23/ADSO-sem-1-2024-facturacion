@@ -5,15 +5,19 @@
 <form id="registroform">
   <div class="form-row">
     <div class="form-group col-md-6">
-      <label for="correo">correo</label>
+      <label for="correo">Correo</label>
       <input type="email" class="form-control" id="correo" placeholder="ingrese un correo" required>
+    </div>
+     <div class="form-group col-md-6">
+      <label for="correo">Nombre completo</label>
+      <input type="text" class="form-control" id="nombrecm" placeholder="Ingrese su nombre completo" required>
     </div>
     <div class="form-group">
       <label for="usuario">nombre de usuario</label>
-      <input type="text" class="form-control" id="usuario" placeholder="ingrese un usuario" required>
+      <input type="text" class="form-control" id="usuario" placeholder="Cree un usuario" required>
     </div>
     <div class="form-group col-md-6">
-      <label for="password">contraseña</label>
+      <label for="password">Contraseña</label>
       <input type="password" class="form-control" id="password" placeholder="ingrse una contraseña" required>
     </div>
 
@@ -25,12 +29,15 @@
 
 
     <div class="form-group col-md-6">
-      <label for="area">¿cual es su area?</label>
-      <select id="area" class="form-control" required>
-        <option value="">seleccione...</option>
-        <option value="textil">textil</option>
-        <option value="alimentos">alimentos</option>
-        <option value="bebidas">bebidas</option>
+      <label for="categoria">¿cual es su area?</label>
+      <select id="categoria" name="categoria" class="form-control">
+        <option selected>Por favor seleccione...</option>
+        
+        {% for categoria in categorias %}
+        
+          <option value="{{categoria.id}}">{{categoria.nombre_categoria}}</option>
+        
+        {% endfor %}  
       </select>
     </div>
 
