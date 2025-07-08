@@ -30,3 +30,10 @@ class usuario (Base):
         usuarios = session.query(usuario).all()
         return usuarios
     
+    def traer_usuarios_correo(correo):
+        usuarios = session.query(usuario).filter(usuario.correo == correo).first()    
+        return usuarios
+    
+    def traer_usuarios_usuario(nombre_usuario):
+        usuarios=session.query(usuario).filter(usuario.nombre_usuario == nombre_usuario).first()  
+        return usuarios    

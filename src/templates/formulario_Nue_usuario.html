@@ -1,91 +1,153 @@
-{%extends 'layout.html'%}
-
-{%block contenido%}
-<h2>registrarse</h2>
-<form id="registroform">
+{% extends 'layout.html' %} {% block contenido %}
+<h2>Registrarse</h2>
+<form id="registroform" method="POST">
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="correo">Correo</label>
-      <input type="email" class="form-control" id="correo" placeholder="ingrese un correo" required>
+      <input
+        type="email"
+        class="form-control"
+        id="correo"
+        name="correo"
+        placeholder="Ingrese un correo"
+        required
+        onblur="validarcorreo()"
+        {%
+        if
+        usuario_almacenar
+        %}
+        value="{{ usuario_almacenar.correo }}"
+        {%
+        endif
+        %}
+      />
+      {% if errorcorreo %}
+      <span
+        class="alert alert-danger"
+        role="alert"
+        id="ErrorCorreo"
+        style="display: block"
+      >
+        {{ errorcorreo }}
+      </span>
+      {% endif %}
     </div>
-     <div class="form-group col-md-6">
-      <label for="correo">Nombre completo</label>
-      <input type="text" class="form-control" id="nombrecm" placeholder="Ingrese su nombre completo" required>
+
+    <div class="form-group col-md-6">
+      <label for="nombrecm">Nombre completo</label>
+      <input
+        type="text"
+        class="form-control"
+        id="nombrecm"
+        name="nombre_persona"
+        placeholder="Ingrese su nombre completo"
+        required
+        {%
+        if
+        usuario_almacenar
+        %}
+        value="{{ usuario_almacenar.nombre_persona }}"
+        {%
+        endif
+        %}
+      />
     </div>
+
     <div class="form-group">
-      <label for="usuario">nombre de usuario</label>
-      <input type="text" class="form-control" id="usuario" placeholder="Cree un usuario" required>
+      <label for="usuario">Nombre de usuario</label>
+      <input
+        type="text"
+        class="form-control"
+        id="usuario"
+        name="nombre_usuario"
+        placeholder="Cree un usuario"
+        required
+        onblur="ValidarUsuario()"
+        {%
+        if
+        usuario_almacenar
+        %}
+        value="{{ usuario_almacenar.nombre_usuario }}"
+        {%
+        endif
+        %}
+      />
+      {% if errorusuario %}
+      <span
+        class="alert alert-danger"
+        role="alert"
+        id="ErrorUsuario"
+        style="display: block"
+      >
+        {{ errorusuario }}</span
+      >
+      {% endif %}
     </div>
+
     <div class="form-group col-md-6">
       <label for="password">Contraseña</label>
-      <input type="password" class="form-control" id="password" placeholder="ingrse una contraseña" required>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        name="contraseña"
+        placeholder="Ingrese una contraseña"
+        required
+        {%
+        if
+        usuario_almacenar
+        %}
+        value="{{ usuario_almacenar.contraseña }}"
+        {%
+        endif
+        %}
+      />
     </div>
 
     <div class="form-group col-md-6">
-      <label for="confirmpassword">confirme contraseña</label>
-      <input type="password" class="form-control" id="confirmpassword" placeholder="ingrese de nuevo su contraseña"
-        required>
-    </div>
-
-
-    <div class="form-group col-md-6">
-      <label for="categoria">¿cual es su area?</label>
+      <label for="categoria">¿Cuál es su área?</label>
       <select id="categoria" name="categoria" class="form-control">
         <option selected>Por favor seleccione...</option>
-        
         {% for categoria in categorias %}
-        
-          <option value="{{categoria.id}}">{{categoria.nombre_categoria}}</option>
-        
-        {% endfor %}  
+        <option value="{{ categoria.id }}">
+          {{ categoria.nombre_categoria }}
+        </option>
+        {% endfor %}
       </select>
     </div>
 
-    <div class="form-group col-md-6 d-flex align-items-center ">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="gridCheck" required>
-        <label class="form-check-label" for="gridCheck">
-          verificame
-        </label>
-      </div>
-
-    </div>
     <div class="text-center mt-6"></div>
-    <button type="submit" class="btn btn-primary">registrarse</button>
-
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+  </div>
 </form>
-<div id="mensajeRegistro"
-  style="display: none; margin-top: 10px; padding: 10px; border: 1px solid green; color: green;">
-  <p><strong>Te has registrado correctamente.</strong></p>
-  <p>Estos son tus datos de registro:</p>
-  <ul>
-    <li><strong>Correo:</strong> <span id="mostrarcorreo"></span></li>
-    <li><strong>Usuario:</strong> <span id="mostrarusuario"></span></li>
-    <li><strong>Área:</strong> <span id="mostrararea"></span></li>
-  </ul>
-</div>
 
-<script>
-  document.getElementById("registroform").addEventListener("submit", function (event) {
-    event.preventDefault();
+<script type="text/javascript">
+  function validarcorreo() {
+    let CampoCorreo = document.getElementById("correo");
+    let ValorCorreo = CampoCorreo.value;
+    let ErrorCorreo = document.getElementById("ErrorCorreo");
+    var expresionregular = new RegExp(
+      "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    );
+    if (expresionregular.test(ValorCorreo)) {
+      ErrorCorreo.style.display = "none";
+    } else {
+      ErrorCorreo.style.display = "block";
+    }
+  }
+</script>
 
-
-    let correo = document.getElementById("correo").value;
-    let usuario = document.getElementById("usuario").value;
-    let area = document.getElementById("area").value;
-
-
-    document.getElementById("mostrarcorreo").innerText = correo;
-    document.getElementById("mostrarusuario").innerText = usuario;
-    document.getElementById("mostrararea").innerText = area;
-
-
-    document.getElementById("mensajeRegistro").style.display = "block";
-
-
-    document.getElementById("registroform").reset();
-
-
-  });
+<script type="text/javascript">
+  function ValidarUsuario() {
+    let CampoUsuario = document.getElementById("usuario");
+    let ValorUsuario = CampoUsuario.value;
+    let ErrorUsuario = document.getElementById("ErrorUsuario");
+    var expresionregular = new RegExp("^[a-zA-Z0-9._]{3,20}$");
+    if (expresionregular.test(ValorUsuario)) {
+      ErrorUsuario.style.display = "none";
+    } else {
+      ErrorUsuario.style.display = "block";
+    }
+  }
 </script>
 {%endblock contenido%}
