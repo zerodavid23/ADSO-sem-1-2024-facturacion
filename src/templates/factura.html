@@ -1,257 +1,178 @@
-{%extends 'layout.html'%} {%block contenido%}
-<h2>imprimir factura</h2>
-<form id="facturaform">
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="correo">correo</label>
-      <input
-        type="email"
-        class="form-control"
-        id="correo"
-        placeholder="ingrese un correo"
-        required
-        onblur="ValidarCorreo()"
-      />
+{% extends 'layout.html' %} {% block contenido %}
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Imprimir Factura</h2>
     </div>
-    <span
-      class="alert alert-danger"
-      role="alert"
-      id="ErrorCorreo"
-      style="display: none"
-    >
-      por favor ingrese un correo valido</span
-    >
+    <div class="card-body">
+      <form id="facturaform" method="POST">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="correo">Correo</label>
+            <input
+              type="email"
+              class="form-control"
+              id="correo"
+              placeholder="Ingrese un correo"
+              required
+              name="correo"
+              onblur="ValidarCorreo()"
+              {%
+              if
+              factura_almacenar
+              %}
+              value="{{ factura_almacenar.usuario.correo }}"
+              {%
+              endif
+              %}
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="usuario">Nombre de usuario</label>
+            <input
+              type="text"
+              class="form-control"
+              id="usuario"
+              placeholder="Ingrese un usuario"
+              required
+              name="nombre_usuario"
+              onblur="ValidarUsuario()"
+              {%
+              if
+              factura_almacenar
+              %}
+              value="{{ factura_almacenar.usuario.nombre_usuario}}"
+              {%
+              endif
+              %}
+            />
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="usuario">nombre de usuario</label>
-      <input
-        type="text"
-        class="form-control"
-        id="usuario"
-        placeholder="ingrese un usuario"
-        required
-        onblur="ValidarUsuario()"
-      />
-    </div>
-    <span
-      class="alert alert-danger"
-      role="alert"
-      id="ErrorUsuario"
-      style="display: none"
-    >
-      por favor ingrese un usuairio valido</span
-    >
-    <div class="form-group col-md-6">
-      <label for="area">¿cual es su area?</label>
-      <select id="area" class="form-control" required>
-        <option value="">seleccione...</option>
-        <option value="textil">textil</option>
-        <option value="alimentos">alimentos</option>
-        <option value="bebidas">bebidas</option>
-      </select>
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label for="codigoproduct">Código producto</label>
+            <input
+              type="text"
+              class="form-control"
+              id="codigoproduct"
+              onblur="ValidarCodigo()"
+              placeholder="Ingrese el código del producto"
+              required
+              name="id_producto"
+              {%
+              if
+              factura_almacenar
+              %}
+              value="{{ factura_almacenar.Producto_object.id_producto }}"
+              {%
+              endif
+              %}
+            />
+          </div>
+          <div class="form-group col-md-5">
+            <label for="nombre_producto">Nombre del producto</label>
+            <input
+              type="text"
+              class="form-control mb-2"
+              id="nombre_producto"
+              placeholder="Nombre del producto"
+              required
+              name="nombre_producto"
+              {%
+              if
+              factura_almacenar
+              %}
+              value="{{ factura_almacenar.Producto_object.nombre_producto }}"
+              {%
+              endif
+              %}
+            />
+          </div>
+          <div class="form-group col-md-4">
+            <label for="start">Fecha</label>
+            <input
+              type="date"
+              class="form-control"
+              id="fecha"
+              name="fecha"
+              {%
+              if
+              factura_almacenar
+              %}
+              value="{{ factura_almacenar.fecha.strftime('%Y-%m-%d') }}"
+              {%
+              endif
+              %}
+            />
+            <label for="cantidad_producto">Cantidad del producto</label>
+            <input
+              type="number"
+              class="form-control"
+              id="cantidad_producto"
+              placeholder="Cantidad del producto"
+              required
+              name="cantidad_ingresada"
+              {%
+              if
+              factura_almacenar
+              %}
+              value="factura_almacenar.cantidad_ingresada"
+              {%
+              endif
+              %}
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col text-right">
+            <button type="button" class="btn btn-success" id="agregarproducto">
+              Agregar producto
+            </button>
+            <button
+              type="button"
+              class="btn btn-info"
+              id="lista_facturas"
+              onclick="window.location.href='{{ url_for('historial_facturas') }}';"
+            >
+              historial de facturas
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3 w-100">
+          Imprimir factura
+        </button>
+      </form>
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-group col-md-3">
-      <label for="codigoproduct">codigo producto</label>
-      <input
-        type="text"
-        class="form-control"
-        id="codigoproduct"
-        onblur="ValidarCodigo()"
-      />
+
+  <div id="factura" class="card mt-4 shadow" style="display: none">
+    <div class="card-header bg-success text-white">
+      <h2 class="mb-0">Factura</h2>
     </div>
-    <span
-      class="alert alert-danger"
-      role="alert"
-      id="ErrorCodigo"
-      style="display: none"
-    >
-      por favor solo ingrese el codigo del producto sin caracteres especiales o
-      espacios</span
-    >
-    <button type="button" class="btn btn-success" id="agregarproducto">
-      agregarproducto
-    </button>
+    <div class="card-body">
+      <p><strong>Correo:</strong> <span id="mostrarcorreo"></span></p>
+      <p>
+        <strong>nombre de Usuario:</strong> <span id="mostrarusuario"></span>
+      </p>
+      <p><strong>fecha de factura:</strong><span id="mostrar_fecha"></span></p>
+      <div class="table-responsive">
+        <table class="table table-bordered" id="tablafactura">
+          <thead class="thead-light">
+            <tr>
+              <th>Código</th>
+              <th>nombre del producto</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+              <th>tipo de medida</th>
+              <th>Categoría</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <h3 class="text-right">Total: $<span id="totalfactura">0</span></h3>
+    </div>
   </div>
-
-  <button type="submit" class="btn btn-primary mt-3">imprimir factura</button>
-</form>
-
-<div id="factura" style="display: none; margin-top: 20px">
-  <h2>Factura</h2>
-  <p><strong>Correo:</strong> <span id="mostrarcorreo"></span></p>
-  <p><strong>Usuario:</strong> <span id="mostrarusuario"></span></p>
-  <p><strong>Área:</strong> <span id="mostrararea"></span></p>
-
-  <table border="1" width="100%" id="tablafactura">
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>Descripción</th>
-        <th>Cantidad</th>
-        <th>Precio</th>
-        <th>Unidad</th>
-        <th>Categoría</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <h3>total:$<span id="totalfactura">0</span></h3>
 </div>
-
-<script>
-  const productos = [
-    {
-      codigo: "1",
-      descripcion: "Pan tajado bolsa 200 grs",
-      cantidad: "100",
-      precio: 5000,
-      unidad: "Unidad",
-      categoria: "Alimentos",
-    },
-    {
-      codigo: "2",
-      descripcion: "Carne cerdo costilla",
-      cantidad: "10000",
-      precio: 32,
-      unidad: "GRS",
-      categoria: "Alimentos",
-    },
-    {
-      codigo: "3",
-      descripcion: "Chaqueta cuerina",
-      cantidad: "40",
-      precio: 79900,
-      unidad: "Unidad",
-      categoria: "Ropa",
-    },
-    {
-      codigo: "4",
-      descripcion: "Zapatos deportivos",
-      cantidad: "20",
-      precio: 43900,
-      unidad: "Unidad",
-      categoria: "Ropa",
-    },
-    {
-      codigo: "5",
-      descripcion: "Energizante Pantera",
-      cantidad: "100",
-      precio: 4500,
-      unidad: "Unidad",
-      categoria: "Bebidas",
-    },
-    {
-      codigo: "6",
-      descripcion: "Soda Hatsu",
-      cantidad: "60",
-      precio: 5500,
-      unidad: "Unidad",
-      categoria: "Bebidas",
-    },
-  ];
-  let total = 0;
-
-  document
-    .getElementById("agregarproducto")
-    .addEventListener("click", function () {
-      let codigoproducto = document
-        .getElementById("codigoproduct")
-        .value.trim();
-      let producto = productos.find((p) => p.codigo === codigoproducto);
-
-      if (producto) {
-        let tbody = document.querySelector("#tablafactura tbody");
-        let fila = document.createElement("tr");
-
-        fila.innerHTML = `
-            <td>${producto.codigo}</td>
-            <td>${producto.descripcion}</td>
-            <td>${producto.cantidad}</td>
-            <td>$${producto.precio}</td>
-            <td>${producto.unidad}</td>
-            <td>${producto.categoria}</td>
-        `;
-        tbody.appendChild(fila);
-
-        total += producto.precio;
-        document.getElementById(
-          "totalfactura"
-        ).innerText = `$${total.toLocaleString()}`;
-
-        document.getElementById("factura").style.display = "block";
-      } else {
-        alert("Código de producto no encontrado.");
-      }
-    });
-
-  document
-    .getElementById("facturaform")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      document.getElementById("mostrarcorreo").innerText =
-        document.getElementById("correo").value;
-      document.getElementById("mostrarusuario").innerText =
-        document.getElementById("usuario").value;
-      document.getElementById("mostrararea").innerText =
-        document.getElementById("area").value;
-
-      document.getElementById("factura").style.display = "block";
-    });
-</script>
-<script type="text/javascript">
-  function ValidarCorreo() {
-    console.log("entro a la funcion");
-    let CampoCorreo = document.getElementById("correo");
-    let ValorCorreo = CampoCorreo.value;
-    let ErrorCorreo = document.getElementById("ErrorCorreo");
-    console.log("el valor escrtio es: " + ValorCorreo);
-    var expresionregular = new RegExp("[^\\s@]+@[^\\s@]+\\.[^\\s@]+");
-    if (expresionregular.test(ValorCorreo)) {
-      console.log("el campo cumple la validacion");
-      ErrorCorreo.style.display = "none";
-    } else {
-      console.log("el campo no cumple la validacion");
-      ErrorCorreo.style.display = "block";
-    }
-  }
-</script>
-
-<script type="text/javascript">
-  function ValidarUsuario() {
-    console.log("entro a la funcion");
-    let CampoUsuario = document.getElementById("usuario");
-    let ValorUsuario = CampoUsuario.value;
-    let ErrorUsuario = document.getElementById("ErrorUsuario");
-    console.log("el valor escrtio es: " + ValorUsuario);
-    var expresionregular = new RegExp("[a-zA-Z][a-zA-Z0-9_]{3,19}");
-    if (expresionregular.test(ValorUsuario)) {
-      console.log("el campo cumple la validacion");
-      ErrorUsuario.style.display = "none";
-    } else {
-      console.log("el campo no cumple la validacion");
-      ErrorUsuario.style.display = "block";
-    }
-  }
-</script>
-
-<script type="text/javascript">
-  function ValidarCodigo() {
-    console.log("entro a la funcion");
-    let CampoCodigo = document.getElementById("codigoproduct");
-    let ValorCodigo = CampoCodigo.value;
-    let ErrorCodigo = document.getElementById("ErrorCodigo");
-    console.log("el valor escrtio es: " + ValorCodigo);
-    var expresionregular = new RegExp("\\d{1,6}");
-    if (expresionregular.test(ValorCodigo)) {
-      console.log("el campo cumple la validacion");
-      ErrorCodigo.style.display = "none";
-    } else {
-      console.log("el campo no cumple la validacion");
-      ErrorCodigo.style.display = "block";
-    }
-  }
-</script>
-{%endblock contenido%}
+{% endblock contenido %}

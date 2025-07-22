@@ -1,0 +1,67 @@
+{%extends'layout.html' %} {%block contenido%}
+<h2>Listado de facturas</h2>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">correo</th>
+      <th scope="col">Nombre de usuario</th>
+      <th scope="col">codigo producto</th>
+      <th scope="col">nombre del producto</th>
+      <th scope="col">fecha</th>
+      <th scope="col">cantidad</th>
+      <th scope="col">total</th>
+      <th scope="col">acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for factura in facturas %}
+    <tr>
+      <th scope="row">{{ factura.id_factura }}</th>
+      <td>{{ factura.usuario_object.correo }}</td>
+      <td>{{ factura.usuario_object.nombre_usuario }}</td>
+      <td>{{ factura.producto_object.id_producto }}</td>
+      <td>{{ factura.producto_object.nombre_producto }}</td>
+      <td>{{ factura.fecha }}</td>
+      <td>{{ factura.cantidad_ingresada }}</td>
+      <td>{{ factura.total }}</td>
+
+      <td>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="window.location.href='{{ url_for('detalle_factura', id_factura=factura.id_factura) }}';"
+        >
+          Detalle de la factura
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';"
+        >
+          Editar
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick="eliminarFila(this)"
+        >
+          Borrar
+        </button>
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+
+<script>
+  function eliminarFila(boton) {
+    if (confirm("¿Seguro que deseas eliminar este producto?")) {
+      let fila = boton.closest("tr"); // Encuentra la fila donde está el botón
+      fila.remove(); // Elimina la fila de la tabla
+    }
+  }
+</script>
+{% endblock contenido %}

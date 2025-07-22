@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from src.models import session, Base
-
+from sqlalchemy.orm import relationship
 
 class usuario (Base):
     __tablename__="usuario"
@@ -11,6 +11,7 @@ class usuario (Base):
     contraseña = Column(String(15), nullable=False)
     categoria =Column (Integer,ForeignKey('Categoria.id'), nullable=False)
    
+    facturas = relationship('Factura', back_populates='usuario_object')
 
 
     def __init__ (self,correo,nombre_persona,nombre_usuario,contraseña,categoria):

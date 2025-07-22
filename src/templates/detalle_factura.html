@@ -1,0 +1,26 @@
+{% extends 'layout.html' %} {% block contenido %}
+
+<h2>Factura #{{ factura.id_factura }}</h2>
+<p>Cliente: {{ cliente.nombre_usuario }}</p>
+<p>Correo: {{ cliente.correo }}</p>
+<p>Fecha: {{ factura.fecha }}</p>
+<p>Total: ${{ factura.total }}</p>
+
+<h3>Productos:</h3>
+<table>
+  <tr>
+    <th>Nombre</th>
+    <th>Cantidad</th>
+    <th>Precio</th>
+    <th>Subtotal</th>
+  </tr>
+  {% for d in detalles %}
+  <tr>
+    <td>{{ d.producto.nombre }}</td>
+    <td>{{ d.cantidad }}</td>
+    <td>${{ d.precio_unitario }}</td>
+    <td>${{ d.cantidad * d.precio_unitario }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock contenido %}

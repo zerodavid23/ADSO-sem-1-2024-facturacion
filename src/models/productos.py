@@ -1,20 +1,23 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from src.models import session, Base
 from src.models.categorias import Categoria
+from sqlalchemy.orm import relationship
+
 
 class Producto (Base):
     __tablename__="Producto"
     id_producto = Column(Integer,primary_key=True)
-    nombre =Column(String(300), unique=True)
+    nombre_producto =Column(String(300), unique=True)
     descripcion =Column(String(300), unique=True)
     cantidad_inventario = Column(Float(10,8))
     precio_unitario = Column(Float(10,8))
     unidad_medida = Column(String(3), nullable =False)
     categoria =Column (Integer,ForeignKey('Categoria.id'), nullable=False)
 
+    facturas =relationship('Factura', back_populates='producto_object')
 
-    def __init__ (self,nombre,descripcion,cantidad_inventario,precio_unitario,unidad_medida,categoria):
-        self.nombre = nombre 
+    def __init__ (self,nombre_producto,descripcion,cantidad_inventario,precio_unitario,unidad_medida,categoria):
+        self.nombre_producto = nombre_producto 
         self.descripcion =  descripcion
         self.cantidad_inventario = cantidad_inventario
         self.precio_unitario = precio_unitario
