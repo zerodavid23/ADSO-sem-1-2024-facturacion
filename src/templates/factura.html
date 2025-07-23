@@ -26,6 +26,15 @@
               endif
               %}
             />
+            {% if errorcorreo %}
+            <span
+              class="alert alert-danger"
+              role="alert"
+              id="ErrorCorreo"
+              style="display: block"
+              >{{ errorcorreo }}
+            </span>
+            {% endif %}
           </div>
           <div class="form-group col-md-6">
             <label for="usuario">Nombre de usuario</label>
@@ -46,6 +55,16 @@
               endif
               %}
             />
+            {% if errorusuario %}
+            <span
+              class="alert alert-danger"
+              role="alert"
+              id="ErrorUsuario"
+              style="display: block"
+            >
+              {{ errorusuario }}
+            </span>
+            {% endif %}
           </div>
         </div>
 
@@ -69,6 +88,16 @@
               endif
               %}
             />
+            {% if erroridproducto %}
+            <span
+              class="alert alert-danger"
+              role="alert"
+              id="ErrorID_producto"
+              style="display: block"
+            >
+              {{ erroridproducto }}
+            </span>
+            {% endif %}
           </div>
           <div class="form-group col-md-5">
             <label for="nombre_producto">Nombre del producto</label>
@@ -79,6 +108,7 @@
               placeholder="Nombre del producto"
               required
               name="nombre_producto"
+              onblur="ValidarNombreProducto()"
               {%
               if
               factura_almacenar
@@ -88,6 +118,16 @@
               endif
               %}
             />
+            {% if errornombreproducto %}
+            <span
+              class="alert alert-danger"
+              role="alert"
+              id="ErrorNombre_Producto"
+              style="display: block"
+            >
+              {{ errornombreproducto }}
+            </span>
+            {% endif %}
           </div>
           <div class="form-group col-md-4">
             <label for="start">Fecha</label>
@@ -117,7 +157,7 @@
               if
               factura_almacenar
               %}
-              value="factura_almacenar.cantidad_ingresada"
+              value="{{ factura_almacenar.cantidad_ingresada }}"
               {%
               endif
               %}
@@ -146,16 +186,16 @@
     </div>
   </div>
 
-  <div id="factura" class="card mt-4 shadow" style="display: none">
+  {% if facturas %}
+  <div id="factura" class="card mt-4 shadow" style="display: block">
     <div class="card-header bg-success text-white">
       <h2 class="mb-0">Factura</h2>
     </div>
     <div class="card-body">
-      <p><strong>Correo:</strong> <span id="mostrarcorreo"></span></p>
-      <p>
-        <strong>nombre de Usuario:</strong> <span id="mostrarusuario"></span>
-      </p>
-      <p><strong>fecha de factura:</strong><span id="mostrar_fecha"></span></p>
+      <p><strong>Correo:</strong>{{ usuario.correo }}</p>
+      <p><strong>nombre de Usuario:</strong> {{ usuario.nombre_usuario }}</p>
+      <p><strong>fecha de factura:</strong>{{ facturas[0].fecha }}</p>
+
       <div class="table-responsive">
         <table class="table table-bordered" id="tablafactura">
           <thead class="thead-light">
@@ -168,11 +208,70 @@
               <th>Categoría</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            {% for factura in facturas %}
+            <tr>
+              <td>{{ factura.producto_object.id_producto }}</td>
+              <td>{{ factura.producto_object.nombre_producto }}</td>
+              <td>{{ factura.cantidad_ingresada }}</td>
+              <td>{{ factura.producto_object.precio }}</td>
+              <td>{{ factura.producto_object.tipo_medida }}</td>
+              <td>{{ factura.producto_object.categoria }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
       </div>
-      <h3 class="text-right">Total: $<span id="totalfactura">0</span></h3>
+      <h3 class="text-right">
+        Total: $
+        <span id="totalfactura">{{ facturas | sum(attribute='total') }} </span>
+      </h3>
     </div>
   </div>
+  {% endif %} {% if not facturas %}
+  <div class="alert alert-info mt-4">no se ha encontrado ninguna factura</div>
+  {% endif %}
 </div>
+<script type="text/javascript">
+  function ValidarCorreo() {
+    let ValorCorreo = document.getElementById("correo").value;
+    let ErrorCorreo = document.getElementById("ErrorCorreo");
+    var expresionregular = new RegExp(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    );
+    if (expresionregular.test(ValorCorreo) && ValorCorreo.trim() !== "") {
+      ErrorCorreo.style.display = "none";
+    } else {
+      ErrorCorreo.style.display = "block";
+      ErrorCorreo.innerHTML = "El correo no es válido";
+    }
+  }
+</script>
+<script type="text/javascript">
+  function ValidarUsuario() {
+    let ValorUsuario = document.getElementById("usuario").value;
+    let ErrorUsuario = document.getElementById("ErrorUsuario");
+    var expresionregular = new RegExp("^[a-zA-Z0-9_]+$");
+    if (expresionregular.test(ValorUsuario) && ValorUsuario.trim() !== "") {
+      ErrorUsuario.style.display = "none";
+    } else {
+      ErrorUsuario.style.display = "block";
+      ErrorUsuario.innerHTML = "El nombre de usuario no es válido";
+    }
+  }
+</script>
+<script type="text/javascript">
+  function ValidarCodigo() {
+    let ValorCodigo = document.getElementById("codigoproduct").value;
+    let ErrorID_producto = document.getElementById("ErrorID_producto");
+    var expresionregular = new RegExp("^[0-9]+$");
+    if (expresionregular.test(ValorCodigo) && ValorCodigo.trim() !== "") {
+      ErrorID_producto.style.display = "none";
+    } else {
+      ErrorID_producto.style.display = "block";
+      ErrorID_producto.innerHTML = "El código del producto no es válido";
+    }
+  }
+</script>
+
 {% endblock contenido %}

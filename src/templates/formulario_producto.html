@@ -103,7 +103,7 @@ function ValidarNombre(){
   let ErrorNombre = document.getElementById("ErrorNombre");
   console.log("el valor escrtio es: " + ValorNombre);
   var expresionregular = new RegExp("[a-zA-Z\s]+")
-  if(expresionregular.test(ValorNombre)) { 
+  if(expresionregular.test(ValorNombre)&& ValorNombre.trim() !== "") { 
   console.log("el campo cumple la validacion");
   ErrorNombre.style.display = 'none';
   }else{
@@ -117,7 +117,6 @@ function ValidarNombre(){
 <script type="text/javascript">
 function ValidarDescripcion() {
   console.log("Entró a la función de validación de descripción");
-  
   let CampoDescripcion = document.getElementById("descripcion");
   let ValorDescripcion = CampoDescripcion.value;
   let ErrorDescripcion = document.getElementById("ErrorDescripcion");

@@ -34,4 +34,9 @@ class Factura(Base):
     @staticmethod 
     def traer_facturas():
         return session.query(Factura).all()
+    @property
+    def total(self):
+            return self.cantidad_ingresada * self.producto_object.precio_unitario
+
    
+         

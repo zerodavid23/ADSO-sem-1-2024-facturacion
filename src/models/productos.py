@@ -38,5 +38,8 @@ class Producto (Base):
         producto = session.query(Producto).filter(Producto.descripcion == descripcion).first()    
         return producto
     def traer_producto_nombre(nombre):
-        producto=session.query(Producto).filter(Producto.nombre == nombre).first()  
+        producto=session.query(Producto).filter(Producto.nombre_producto == nombre).first()  
         return producto    
+    def traer_producto_id(id_producto):
+        producto = session.query(Producto).filter(Producto.id_producto == id_producto).first()
+        return producto
