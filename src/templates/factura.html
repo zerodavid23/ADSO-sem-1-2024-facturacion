@@ -9,59 +9,21 @@
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="correo">Correo</label>
-            <input
-              type="email"
-              class="form-control"
-              id="correo"
-              placeholder="Ingrese un correo"
-              required
-              name="correo"
+            <input type="email" class="form-control" id="correo" placeholder="Ingrese un correo" required name="correo"
               onblur="ValidarCorreo()"
-              {%
-              if
-              factura_almacenar
-              %}
-              value="{{ factura_almacenar.usuario.correo }}"
-              {%
-              endif
-              %}
-            />
+              value="{% if form_data %}{{ form_data.correo }}{% elif factura_almacenar %}{{ factura_almacenar.usuario.correo }}{% endif %}" />
             {% if errorcorreo %}
-            <span
-              class="alert alert-danger"
-              role="alert"
-              id="ErrorCorreo"
-              style="display: block"
-              >{{ errorcorreo }}
+            <span class="alert alert-danger" role="alert" id="ErrorCorreo" style="display: block">{{ errorcorreo }}
             </span>
             {% endif %}
           </div>
           <div class="form-group col-md-6">
             <label for="usuario">Nombre de usuario</label>
-            <input
-              type="text"
-              class="form-control"
-              id="usuario"
-              placeholder="Ingrese un usuario"
-              required
-              name="nombre_usuario"
-              onblur="ValidarUsuario()"
-              {%
-              if
-              factura_almacenar
-              %}
-              value="{{ factura_almacenar.usuario.nombre_usuario}}"
-              {%
-              endif
-              %}
-            />
+            <input type="text" class="form-control" id="usuario" placeholder="Ingrese un usuario" required
+              name="nombre_usuario" onblur="ValidarUsuario()"
+              value="{% if form_data %} {{ form_data.nombre_usuario }} {% elif factura_almacenar %}{{ factura_almacenar.usuario.nombre_usuario }}{% endif %}" />
             {% if errorusuario %}
-            <span
-              class="alert alert-danger"
-              role="alert"
-              id="ErrorUsuario"
-              style="display: block"
-            >
+            <span class="alert alert-danger" role="alert" id="ErrorUsuario" style="display: block">
               {{ errorusuario }}
             </span>
             {% endif %}
@@ -71,122 +33,86 @@
         <div class="form-row">
           <div class="form-group col-md-3">
             <label for="codigoproduct">Código producto</label>
-            <input
-              type="text"
-              class="form-control"
-              id="codigoproduct"
-              onblur="ValidarCodigo()"
-              placeholder="Ingrese el código del producto"
-              required
-              name="id_producto"
-              {%
-              if
-              factura_almacenar
-              %}
-              value="{{ factura_almacenar.Producto_object.id_producto }}"
-              {%
-              endif
-              %}
-            />
+            <input type="text" class="form-control" id="codigoproduct" onblur="ValidarCodigo()"
+              placeholder="Ingrese el código del producto" required name="id_producto" {% if factura_almacenar %}
+              value="{{ factura_almacenar.Producto_object.id_producto }}" {% endif %} />
             {% if erroridproducto %}
-            <span
-              class="alert alert-danger"
-              role="alert"
-              id="ErrorID_producto"
-              style="display: block"
-            >
+            <span class="alert alert-danger" role="alert" id="ErrorID_producto" style="display: block">
               {{ erroridproducto }}
             </span>
             {% endif %}
           </div>
           <div class="form-group col-md-5">
             <label for="nombre_producto">Nombre del producto</label>
-            <input
-              type="text"
-              class="form-control mb-2"
-              id="nombre_producto"
-              placeholder="Nombre del producto"
-              required
-              name="nombre_producto"
-              onblur="ValidarNombreProducto()"
-              {%
-              if
-              factura_almacenar
-              %}
-              value="{{ factura_almacenar.Producto_object.nombre_producto }}"
-              {%
-              endif
-              %}
-            />
+            <input type="text" class="form-control mb-2" id="nombre_producto" placeholder="Nombre del producto" required
+              name="nombre_producto" onblur="ValidarNombreProducto()" {% if factura_almacenar %}
+              value="{{ factura_almacenar.Producto_object.nombre_producto }}" {% endif %} />
             {% if errornombreproducto %}
-            <span
-              class="alert alert-danger"
-              role="alert"
-              id="ErrorNombre_Producto"
-              style="display: block"
-            >
+            <span class="alert alert-danger" role="alert" id="ErrorNombre_Producto" style="display: block">
               {{ errornombreproducto }}
             </span>
             {% endif %}
           </div>
           <div class="form-group col-md-4">
             <label for="start">Fecha</label>
-            <input
-              type="date"
-              class="form-control"
-              id="fecha"
-              name="fecha"
-              {%
-              if
-              factura_almacenar
-              %}
-              value="{{ factura_almacenar.fecha.strftime('%Y-%m-%d') }}"
-              {%
-              endif
-              %}
-            />
+            <input type="date" class="form-control" id="fecha" name="fecha" {% if factura_almacenar %}
+              value="{{ factura_almacenar.fecha.strftime('%Y-%m-%d') }}" {% endif %} />
             <label for="cantidad_producto">Cantidad del producto</label>
-            <input
-              type="number"
-              class="form-control"
-              id="cantidad_producto"
-              placeholder="Cantidad del producto"
-              required
-              name="cantidad_ingresada"
-              {%
-              if
-              factura_almacenar
-              %}
-              value="{{ factura_almacenar.cantidad_ingresada }}"
-              {%
-              endif
-              %}
-            />
+            <input type="number" class="form-control" id="cantidad_producto" placeholder="Cantidad del producto"
+              required name="cantidad_ingresada" {% if factura_almacenar %}
+              value="{{ factura_almacenar.cantidad_ingresada }}" {% endif %} />
           </div>
         </div>
         <div class="form-row">
           <div class="col text-right">
-            <button type="button" class="btn btn-success" id="agregarproducto">
+            <button type="submit" name="accion" value="agregar_producto" class="btn btn-success" id="agregarproducto">
               Agregar producto
             </button>
-            <button
-              type="button"
-              class="btn btn-info"
-              id="lista_facturas"
-              onclick="window.location.href='{{ url_for('historial_facturas') }}';"
-            >
+            <button type="button" class="btn btn-info" id="lista_facturas"
+              onclick="window.location.href='{{ url_for('historial_facturas') }}';">
               historial de facturas
             </button>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3 w-100">
+        <button type="submit" name="accion" value="crear_factura" class="btn btn-primary mt-3 w-100">
           Imprimir factura
         </button>
       </form>
     </div>
   </div>
-
-  {% if facturas %}
+  {% if producto %}
+  <div class="card mt -4">
+    <div class="card header bg-secondary text-white">
+      <h4 class="mb-0">producto en la factura</h4>
+    </div>
+    <div class="card-body p-0">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>nombre</th>
+            <th>descripcion</th>
+            <th>cantidad</th>
+            <th>fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for producto in productos %}
+          <tr>
+            <td>{{producto.id_producto}}</td>
+            <td>{{producto.nombre_producto}}</td>
+            <td>{{producto.descripcion}}</td>
+            <td>{{producto.cantidad}}</td>
+            <td>{{producto.fecha}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info mt-4">no se ha encontrado ningun producto</div>
+  {% endif %} {# — Facturas ya creadas — #} {% if facturas %}
   <div id="factura" class="card mt-4 shadow" style="display: block">
     <div class="card-header bg-success text-white">
       <h2 class="mb-0">Factura</h2>
@@ -204,34 +130,49 @@
               <th>nombre del producto</th>
               <th>Cantidad</th>
               <th>Precio</th>
-              <th>tipo de medida</th>
-              <th>Categoría</th>
+              <th>subtotal</th>
             </tr>
           </thead>
           <tbody>
-            {% for factura in facturas %}
+            {% for factura in facturas %} {% for detalle in factura.detalles %}
             <tr>
-              <td>{{ factura.producto_object.id_producto }}</td>
-              <td>{{ factura.producto_object.nombre_producto }}</td>
-              <td>{{ factura.cantidad_ingresada }}</td>
-              <td>{{ factura.producto_object.precio }}</td>
-              <td>{{ factura.producto_object.tipo_medida }}</td>
-              <td>{{ factura.producto_object.categoria }}</td>
+              <td>{{ detalle.id_producto }}</td>
+              <td>{{ detalle.producto_object.nombre_producto }}</td>
+              <td>{{ detalle.cantidad }}</td>
+              <td>{{ detalle.precio_unitario }}</td>
+              <td>{{ detalle.total }}</td>
             </tr>
-            {% endfor %}
+            {% endfor %} {% endfor %}
           </tbody>
         </table>
       </div>
       <h3 class="text-right">
-        Total: $
-        <span id="totalfactura">{{ facturas | sum(attribute='total') }} </span>
+        Total: $<span id="totalfactura">{{ '%.2f'|format(total) }}</span>
       </h3>
+
     </div>
   </div>
-  {% endif %} {% if not facturas %}
+  {% else %}
   <div class="alert alert-info mt-4">no se ha encontrado ninguna factura</div>
   {% endif %}
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const botonAgregar = document.getElementById("agregarproducto");
+    const tablaFactura = document.getElementById("facturaform");
+
+    botonAgregar.addEventListener("click", function () {
+      //crea un imput oculto con el valor y el nobre del producto
+      let accionInput = document.createElement("input");
+      accionInput.setAttribute("type", "hidden");
+      accionInput.setAttribute("name", "accion");
+      accionInput.setAttribute("value", "agregar_producto");
+
+      tablaFactura.appendChild(accionInput);
+      tablaFactura.submit();
+    });
+  });
+</script>
 <script type="text/javascript">
   function ValidarCorreo() {
     let ValorCorreo = document.getElementById("correo").value;

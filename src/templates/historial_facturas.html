@@ -1,66 +1,61 @@
-{%extends'layout.html' %} {%block contenido%}
+{% extends 'layout.html' %}
+{% block contenido %}
 <h2>Listado de facturas</h2>
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">Id</th>
-      <th scope="col">correo</th>
-      <th scope="col">Nombre de usuario</th>
-      <th scope="col">codigo producto</th>
-      <th scope="col">nombre del producto</th>
-      <th scope="col">fecha</th>
-      <th scope="col">cantidad</th>
-      <th scope="col">total</th>
-      <th scope="col">acciones</th>
+      <th>Factura ID</th>
+      <th>Correo</th>
+      <th>Usuario</th>
+      <th>Fecha</th>
+      <th>Código Prod</th>
+      <th>Nombre Prod.</th>
+      <th>Cantidad</th>
+      <th>Precio Unit.</th>
+      <th>Subtotal</th>
+      <th>Total Factura</th>
+      <th>Acciones</th>
     </tr>
   </thead>
   <tbody>
-    {% for factura in facturas %}
+    {% for factura, total_factura in facturas %}
+    {% for detalle in factura.detalles %}
     <tr>
-      <th scope="row">{{ factura.id_factura }}</th>
-      <td>{{ factura.usuario_object.correo }}</td>
-      <td>{{ factura.usuario_object.nombre_usuario }}</td>
-      <td>{{ factura.producto_object.id_producto }}</td>
-      <td>{{ factura.producto_object.nombre_producto }}</td>
-      <td>{{ factura.fecha }}</td>
-      <td>{{ factura.cantidad_ingresada }}</td>
-      <td>{{ factura.total }}</td>
+      {% if loop.first %}
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.id_factura }}</td>
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.usuario_object.correo }}</td>
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.usuario_object.nombre_usuario }}</td>
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.fecha }}</td>
+      {% endif %}
+      <td>{{ detalle.id_producto }}</td>
+      <td>{{ detalle.producto_object.nombre_producto }}</td>
+      <td>{{ detalle.cantidad }}</td>
+      <td>{{ detalle.precio_unitario }}</td>
+      <td>{{ detalle.total }}</td>
+      {% if loop.first %}
+      <td rowspan="{{ factura.detalles|length }}">${{ '%.2f'|format(total_factura) }}</td>
+      <td rowspan="{{ factura.detalles|length }}">
+        <div class="btn-group btn-group-toggle">
+          <button class="btn btn-primary btn-sm"
+            onclick="window.location.href='{{ url_for('detalle_factura', id_factura=factura.id_factura) }}';">Detalle</button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Borrar</button>
+        </div>
 
-      <td>
-        <button
-          type="button"
-          class="btn btn-primary"
-          onclick="window.location.href='{{ url_for('detalle_factura', id_factura=factura.id_factura) }}';"
-        >
-          Detalle de la factura
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-success"
-          onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';"
-        >
-          Editar
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick="eliminarFila(this)"
-        >
-          Borrar
-        </button>
       </td>
+      {% endif %}
     </tr>
-    {%endfor%}
+    {% endfor %}
+    {% endfor %}
+
   </tbody>
 </table>
 
 <script>
   function eliminarFila(boton) {
-    if (confirm("¿Seguro que deseas eliminar este producto?")) {
-      let fila = boton.closest("tr"); // Encuentra la fila donde está el botón
-      fila.remove(); // Elimina la fila de la tabla
+    if (confirm("¿Seguro que deseas eliminar esta factura?")) {
+      const fila = boton.closest("tr");
+      // Si eliminas la factura entera, podrías redirigir o hacer petición AJAX aquí
+      fila.remove();
     }
   }
 </script>

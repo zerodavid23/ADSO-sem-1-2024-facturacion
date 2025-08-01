@@ -4,23 +4,28 @@
 <p>Cliente: {{ cliente.nombre_usuario }}</p>
 <p>Correo: {{ cliente.correo }}</p>
 <p>Fecha: {{ factura.fecha }}</p>
-<p>Total: ${{ factura.total }}</p>
 
 <h3>Productos:</h3>
-<table>
-  <tr>
-    <th>Nombre</th>
-    <th>Cantidad</th>
-    <th>Precio</th>
-    <th>Subtotal</th>
-  </tr>
-  {% for d in detalles %}
-  <tr>
-    <td>{{ d.producto.nombre }}</td>
-    <td>{{ d.cantidad }}</td>
-    <td>${{ d.precio_unitario }}</td>
-    <td>${{ d.cantidad * d.precio_unitario }}</td>
-  </tr>
-  {% endfor %}
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Cantidad</th>
+      <th>Precio</th>
+      <th>Subtotal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in detalles %}
+    <tr>
+      <td>{{ d.producto_object.nombre_producto }}</td>
+      <td>{{ d.cantidad }}</td>
+      <td>${{ "%.2f"|format(d.precio_unitario) }}</td>
+      <td>${{ "%.2f"|format(d.cantidad * d.precio_unitario) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
+<h4 class="text-right">Total: ${{ '%.2f'|format(total) }}</h4>
+
 {% endblock contenido %}

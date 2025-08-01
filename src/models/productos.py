@@ -14,7 +14,8 @@ class Producto (Base):
     unidad_medida = Column(String(3), nullable =False)
     categoria =Column (Integer,ForeignKey('Categoria.id'), nullable=False)
 
-    facturas =relationship('Factura', back_populates='producto_object')
+   
+    detalles = relationship('DetalleFactura', back_populates='producto_object')
 
     def __init__ (self,nombre_producto,descripcion,cantidad_inventario,precio_unitario,unidad_medida,categoria):
         self.nombre_producto = nombre_producto 
