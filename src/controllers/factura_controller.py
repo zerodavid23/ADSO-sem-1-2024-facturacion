@@ -22,6 +22,7 @@ class facturaController(FlaskController):
 
             # Obtener los datos del formulario
             correo = request.form.get('correo')
+            nombre_cli = request.form.get('nombre_usuario')
             nombre_usuario = request.form.get('nombre_usuario')
             id_producto = request.form.get('id_producto')
             nombre_producto = request.form.get('nombre_producto')
@@ -36,9 +37,15 @@ class facturaController(FlaskController):
                 return render_template('factura.html', titulo='Error: Correo no encontrado',
                                             errorcorreo="El correo ingresado no está registrado.",
                                             productos=flask_session['productos'])
+            cliente_erroneo = usuario.traer_usuarios_usuario(nombre_cli)
+            if cliente_erroneo is None or nombre_cli == '':
+                 return render_template('factura.html', titulo='Error: usuario de cliente no encontrado',
+                                        errorcliente="el nombre del usuario cliente no esta registrado. ",
+                                        productos=flask_session['productos'])
+
             usuario_erroneo = usuario.traer_usuarios_usuario(nombre_usuario)
             if usuario_erroneo is None or nombre_usuario == '':
-                    return render_template('factura.html', titulo='Errror: usuario no encontrado',
+                    return render_template('factura.html', titulo='Errror: usuario de empleado no encontrado',
                                         errorusuario="el nombre de usuario ingresado no esta registrado.",
                                             productos=flask_session['productos'])
             id_producto_erroneo = Producto.traer_producto_id(id_producto)
@@ -53,7 +60,7 @@ class facturaController(FlaskController):
                                             productos=flask_session['productos'])
             # Verificar coincidencia exacta del usuario       
             usuario_object = db_session.query(usuario).filter_by(
-                correo=correo, nombre_usuario=nombre_usuario).first()
+                correo=correo ,nombre_usuario=nombre_usuario).first()
             if not usuario_object:
                     return render_template('factura.html', 
                                         titulo='Error: Usuario no encontrado',
@@ -86,6 +93,7 @@ class facturaController(FlaskController):
                                     mensaje="Producto agregado correctamente.",
                                     #sirve para mantener los datos del formulario
                                     form_data={'correo': correo,
+                                               'nombre_cli': nombre_cli,
                                                'nombre_usuario': nombre_usuario})
             
             # Crear factura si la acción es 'crear_factura'

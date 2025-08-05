@@ -18,7 +18,7 @@
             {% endif %}
           </div>
           <div class="form-group col-md-6">
-            <label for="usuario">Nombre de usuario</label>
+            <label for="usuario">Nombre de usuario del empleado:</label>
             <input type="text" class="form-control" id="usuario" placeholder="Ingrese un usuario" required
               name="nombre_usuario" onblur="ValidarUsuario()"
               value="{% if form_data %} {{ form_data.nombre_usuario }} {% elif factura_almacenar %}{{ factura_almacenar.usuario.nombre_usuario }}{% endif %}" />
@@ -28,133 +28,147 @@
             </span>
             {% endif %}
           </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group col-md-3">
-            <label for="codigoproduct">Código producto</label>
-            <input type="text" class="form-control" id="codigoproduct" onblur="ValidarCodigo()"
-              placeholder="Ingrese el código del producto" required name="id_producto" {% if factura_almacenar %}
-              value="{{ factura_almacenar.Producto_object.id_producto }}" {% endif %} />
-            {% if erroridproducto %}
-            <span class="alert alert-danger" role="alert" id="ErrorID_producto" style="display: block">
-              {{ erroridproducto }}
-            </span>
-            {% endif %}
-          </div>
-          <div class="form-group col-md-5">
-            <label for="nombre_producto">Nombre del producto</label>
-            <input type="text" class="form-control mb-2" id="nombre_producto" placeholder="Nombre del producto" required
-              name="nombre_producto" onblur="ValidarNombreProducto()" {% if factura_almacenar %}
-              value="{{ factura_almacenar.Producto_object.nombre_producto }}" {% endif %} />
-            {% if errornombreproducto %}
-            <span class="alert alert-danger" role="alert" id="ErrorNombre_Producto" style="display: block">
-              {{ errornombreproducto }}
-            </span>
-            {% endif %}
-          </div>
-          <div class="form-group col-md-4">
-            <label for="start">Fecha</label>
-            <input type="date" class="form-control" id="fecha" name="fecha" {% if factura_almacenar %}
-              value="{{ factura_almacenar.fecha.strftime('%Y-%m-%d') }}" {% endif %} />
-            <label for="cantidad_producto">Cantidad del producto</label>
-            <input type="number" class="form-control" id="cantidad_producto" placeholder="Cantidad del producto"
-              required name="cantidad_ingresada" {% if factura_almacenar %}
-              value="{{ factura_almacenar.cantidad_ingresada }}" {% endif %} />
-          </div>
         </div>
-        <div class="form-row">
-          <div class="col text-right">
-            <button type="submit" name="accion" value="agregar_producto" class="btn btn-success" id="agregarproducto">
-              Agregar producto
-            </button>
-            <button type="button" class="btn btn-info" id="lista_facturas"
-              onclick="window.location.href='{{ url_for('historial_facturas') }}';">
-              historial de facturas
-            </button>
-          </div>
+        <div class="form-group col-md-6">
+          <label for="usuario_cli">Nombre de usuario del cliente:</label>
+          <input type="text" class="form-control" id="usuario_cli" placeholder="Ingrese un usuario" reaquired
+            name="nombre_cli" onblur="ValidarUsuarioCLiente"
+            value="{% if form_data %} {{ form_data.nombre_cli }} {% elif factura_almacenar %} {{ factura_almacenar-usuario.nombre_cli }} {% endif %}" />
+          {% if errorcliente %}
+          <span class="alert alert-danger" role="alert" id="ErrorCliente" style="display: block;">
+            {{errorcliente}}
+
+          </span>
+          {% endif %}
         </div>
-        <button type="submit" name="accion" value="crear_factura" class="btn btn-primary mt-3 w-100">
-          Imprimir factura
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label for="codigoproduct">Código producto</label>
+        <input type="text" class="form-control" id="codigoproduct" onblur="ValidarCodigo()"
+          placeholder="Ingrese el código del producto" required name="id_producto" {% if factura_almacenar %}
+          value="{{ factura_almacenar.Producto_object.id_producto }}" {% endif %} />
+        {% if erroridproducto %}
+        <span class="alert alert-danger" role="alert" id="ErrorID_producto" style="display: block">
+          {{ erroridproducto }}
+        </span>
+        {% endif %}
+      </div>
+      <div class="form-group col-md-5">
+        <label for="nombre_producto">Nombre del producto</label>
+        <input type="text" class="form-control mb-2" id="nombre_producto" placeholder="Nombre del producto" required
+          name="nombre_producto" onblur="ValidarNombreProducto()" {% if factura_almacenar %}
+          value="{{ factura_almacenar.Producto_object.nombre_producto }}" {% endif %} />
+        {% if errornombreproducto %}
+        <span class="alert alert-danger" role="alert" id="ErrorNombre_Producto" style="display: block">
+          {{ errornombreproducto }}
+        </span>
+        {% endif %}
+      </div>
+      <div class="form-group col-md-4">
+        <label for="start">Fecha</label>
+        <input type="date" class="form-control" id="fecha" name="fecha" {% if factura_almacenar %}
+          value="{{ factura_almacenar.fecha.strftime('%Y-%m-%d') }}" {% endif %} />
+        <label for="cantidad_producto">Cantidad del producto</label>
+        <input type="number" class="form-control" id="cantidad_producto" placeholder="Cantidad del producto" required
+          name="cantidad_ingresada" {% if factura_almacenar %} value="{{ factura_almacenar.cantidad_ingresada }}" {%
+          endif %} />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col text-right">
+        <button type="submit" name="accion" value="agregar_producto" class="btn btn-success" id="agregarproducto">
+          Agregar producto
         </button>
-      </form>
+        <button type="button" class="btn btn-info" id="lista_facturas"
+          onclick="window.location.href='{{ url_for('historial_facturas') }}';">
+          historial de facturas
+        </button>
+      </div>
     </div>
+    <button type="submit" name="accion" value="crear_factura" class="btn btn-primary mt-3 w-100">
+      Imprimir factura
+    </button>
+    </form>
   </div>
-  {% if producto %}
-  <div class="card mt -4">
-    <div class="card header bg-secondary text-white">
-      <h4 class="mb-0">producto en la factura</h4>
-    </div>
-    <div class="card-body p-0">
-      <table class="table mb-0">
-        <thead>
+</div>
+{% if productos %}
+<div class="card mt -4">
+  <div class="card header bg-secondary text-white">
+    <h4 class="mb-0">producto en la factura</h4>
+  </div>
+  <div class="card-body p-0">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>nombre</th>
+          <th>descripcion</th>
+          <th>cantidad</th>
+          <th>fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for producto in productos %}
+        <tr>
+          <td>{{producto.id_producto}}</td>
+          <td>{{producto.nombre_producto}}</td>
+          <td>{{producto.descripcion}}</td>
+          <td>{{producto.cantidad}}</td>
+          <td>{{producto.fecha}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-info mt-4">no se ha encontrado ningun producto</div>
+{% endif %} {# — Facturas ya creadas — #} {% if facturas %}
+<div id="factura" class="card mt-4 shadow" style="display: block">
+  <div class="card-header bg-success text-white">
+    <h2 class="mb-0">Factura</h2>
+  </div>
+  <div class="card-body">
+    <p><strong>Correo:</strong>{{ usuario.correo }}</p>
+    <p><strong>nombre de Usuario:</strong> {{ usuario.nombre_usuario }}</p>
+    <p><strong>fecha de factura:</strong>{{ facturas[0].fecha }}</p>
+
+    <div class="table-responsive">
+      <table class="table table-bordered" id="tablafactura">
+        <thead class="thead-light">
           <tr>
-            <th>ID</th>
-            <th>nombre</th>
-            <th>descripcion</th>
-            <th>cantidad</th>
-            <th>fecha</th>
+            <th>Código</th>
+            <th>nombre del producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>subtotal</th>
           </tr>
         </thead>
         <tbody>
-          {% for producto in productos %}
+          {% for factura in facturas %} {% for detalle in factura.detalles %}
           <tr>
-            <td>{{producto.id_producto}}</td>
-            <td>{{producto.nombre_producto}}</td>
-            <td>{{producto.descripcion}}</td>
-            <td>{{producto.cantidad}}</td>
-            <td>{{producto.fecha}}</td>
+            <td>{{ detalle.id_producto }}</td>
+            <td>{{ detalle.producto_object.nombre_producto }}</td>
+            <td>{{ detalle.cantidad }}</td>
+            <td>{{ detalle.precio_unitario }}</td>
+            <td>{{ detalle.total }}</td>
           </tr>
-          {% endfor %}
+          {% endfor %} {% endfor %}
         </tbody>
       </table>
     </div>
-  </div>
-  {% else %}
-  <div class="alert alert-info mt-4">no se ha encontrado ningun producto</div>
-  {% endif %} {# — Facturas ya creadas — #} {% if facturas %}
-  <div id="factura" class="card mt-4 shadow" style="display: block">
-    <div class="card-header bg-success text-white">
-      <h2 class="mb-0">Factura</h2>
-    </div>
-    <div class="card-body">
-      <p><strong>Correo:</strong>{{ usuario.correo }}</p>
-      <p><strong>nombre de Usuario:</strong> {{ usuario.nombre_usuario }}</p>
-      <p><strong>fecha de factura:</strong>{{ facturas[0].fecha }}</p>
+    <h3 class="text-right">
+      Total: $<span id="totalfactura">{{ '%.2f'|format(total) }}</span>
+    </h3>
 
-      <div class="table-responsive">
-        <table class="table table-bordered" id="tablafactura">
-          <thead class="thead-light">
-            <tr>
-              <th>Código</th>
-              <th>nombre del producto</th>
-              <th>Cantidad</th>
-              <th>Precio</th>
-              <th>subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for factura in facturas %} {% for detalle in factura.detalles %}
-            <tr>
-              <td>{{ detalle.id_producto }}</td>
-              <td>{{ detalle.producto_object.nombre_producto }}</td>
-              <td>{{ detalle.cantidad }}</td>
-              <td>{{ detalle.precio_unitario }}</td>
-              <td>{{ detalle.total }}</td>
-            </tr>
-            {% endfor %} {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <h3 class="text-right">
-        Total: $<span id="totalfactura">{{ '%.2f'|format(total) }}</span>
-      </h3>
-
-    </div>
   </div>
-  {% else %}
-  <div class="alert alert-info mt-4">no se ha encontrado ninguna factura</div>
-  {% endif %}
+</div>
+{% else %}
+<div class="alert alert-info mt-4">no se ha encontrado ninguna factura</div>
+{% endif %}
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -189,6 +203,19 @@
   }
 </script>
 <script type="text/javascript">
+  function ValidarUsuarioCLiente() {
+    let valorUsuario_cli = document.getElementById("usuario_cli").value;
+    let Errorcliente = document.getElementById("ErrorCLiente");
+    var expresionregular = new RegExp("^[a-zA-Z0-9_]+$");
+    if (expresionregular.test(valorUsuario_cli) && valorUsuario_cli.trim() !== "") {
+      Errorcliente.style.display = "none";
+    } else {
+      Errorcliente.style.display = "block";
+      Errorcliente.innerHTML = "el nombre del usuario cliente no es valido"
+    }
+  }    
+</script>
+<script type="text/javascript">
   function ValidarUsuario() {
     let ValorUsuario = document.getElementById("usuario").value;
     let ErrorUsuario = document.getElementById("ErrorUsuario");
@@ -197,7 +224,7 @@
       ErrorUsuario.style.display = "none";
     } else {
       ErrorUsuario.style.display = "block";
-      ErrorUsuario.innerHTML = "El nombre de usuario no es válido";
+      ErrorUsuario.innerHTML = "El nombre de usuario cliente no es válido";
     }
   }
 </script>

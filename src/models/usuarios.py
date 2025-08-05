@@ -9,17 +9,17 @@ class usuario (Base):
     nombre_persona =Column(String(300), unique=True, nullable=False)
     nombre_usuario =Column(String(300), unique=True, nullable=False)
     contraseña = Column(String(15), nullable=False)
-    categoria =Column (Integer,ForeignKey('Categoria.id'), nullable=False)
+    tipo_usuario = Column(String(10),nullable=False)
    
     facturas = relationship('Factura', back_populates='usuario_object')
 
 
-    def __init__ (self,correo,nombre_persona,nombre_usuario,contraseña,categoria):
+    def __init__ (self,correo,nombre_persona,nombre_usuario,contraseña,tipo_usuario):
         self.correo = correo 
         self.nombre_persona =  nombre_persona
         self.nombre_usuario = nombre_usuario
         self.contraseña = contraseña
-        self.categoria = categoria
+        self.tipo_usuario = tipo_usuario
 
         
     def crear_usuario(usuario):

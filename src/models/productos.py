@@ -9,8 +9,8 @@ class Producto (Base):
     id_producto = Column(Integer,primary_key=True)
     nombre_producto =Column(String(300), unique=True)
     descripcion =Column(String(300), unique=True)
-    cantidad_inventario = Column(Float(10,8))
-    precio_unitario = Column(Float(10,8))
+    cantidad_inventario = Column(Float)
+    precio_unitario = Column(Float)
     unidad_medida = Column(String(3), nullable =False)
     categoria =Column (Integer,ForeignKey('Categoria.id'), nullable=False)
 

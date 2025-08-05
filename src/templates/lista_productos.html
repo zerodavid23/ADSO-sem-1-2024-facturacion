@@ -18,7 +18,7 @@
     {% for producto in productos %}
     <tr>
       <th scope="row">{{producto.id_producto}}</th>
-      <td>{{producto.nombre}}</td>
+      <td>{{producto.nombre_producto}}</td>
       <td>{{producto.descripcion}}</td>
       <td>{{producto.cantidad_inventario}}</td>
       <td>{{producto.precio_unitario}}</td>
@@ -26,21 +26,16 @@
       <td>{{producto.categoria}}</td>
 
       <td>
-        <button
-          type="button"
-          class="btn btn-success"
-          onclick="window.location.href='{{ url_for('formulario_producto') }}';"
-        >
-          Editar
-        </button>
+        <div class="btn-group btn-group-toggle">
+          <button type="button" class="btn btn-success"
+            onclick="window.location.href='{{ url_for('formulario_producto') }}';">
+            Editar
+          </button>
 
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick="eliminarFila(this)"
-        >
-          Borrar
-        </button>
+          <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">
+            Borrar
+          </button>
+        </div>
       </td>
     </tr>
     {%endfor%}

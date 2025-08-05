@@ -8,7 +8,7 @@
       <th scope="col">Nombre</th>
       <th scope="col">usuario</th>
       <th scope="col">contraseña</th>
-      <th scope="col">categoria</th>
+      <th scope="col">Tipo de usuario</th>
       <th scope="col">Acciones</th>
     </tr>
   </thead>
@@ -20,22 +20,15 @@
       <td>{{usuario.nombre_persona}}</td>
       <td>{{usuario.nombre_usuario}}</td>
       <td>{{usuario.contraseña}}</td>
-      <td>{{usuario.categoria}}</td>
+      <td>{{usuario.tipo_usuario}}</td>
 
       <td>
-        <button
-          type="button"
-          class="btn btn-success"
-          onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';"
-        >
+        <button type="button" class="btn btn-success"
+          onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';">
           Editar
         </button>
 
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick="eliminarFila(this)"
-        >
+        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">
           Borrar
         </button>
       </td>

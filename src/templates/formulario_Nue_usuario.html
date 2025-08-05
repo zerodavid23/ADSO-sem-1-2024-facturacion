@@ -4,30 +4,10 @@
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="correo">Correo</label>
-      <input
-        type="email"
-        class="form-control"
-        id="correo"
-        name="correo"
-        placeholder="Ingrese un correo"
-        required
-        onblur="validarcorreo()"
-        {%
-        if
-        usuario_almacenar
-        %}
-        value="{{ usuario_almacenar.correo }}"
-        {%
-        endif
-        %}
-      />
+      <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese un correo" required
+        onblur="validarcorreo()" {% if usuario_almacenar %} value="{{ usuario_almacenar.correo }}" {% endif %} />
       {% if errorcorreo %}
-      <span
-        class="alert alert-danger"
-        role="alert"
-        id="ErrorCorreo"
-        style="display: block"
-      >
+      <span class="alert alert-danger" role="alert" id="ErrorCorreo" style="display: block">
         {{ errorcorreo }}
       </span>
       {% endif %}
@@ -35,84 +15,34 @@
 
     <div class="form-group col-md-6">
       <label for="nombrecm">Nombre completo</label>
-      <input
-        type="text"
-        class="form-control"
-        id="nombrecm"
-        name="nombre_persona"
-        placeholder="Ingrese su nombre completo"
-        required
-        {%
-        if
-        usuario_almacenar
-        %}
-        value="{{ usuario_almacenar.nombre_persona }}"
-        {%
-        endif
-        %}
-      />
+      <input type="text" class="form-control" id="nombrecm" name="nombre_persona"
+        placeholder="Ingrese su nombre completo" required {% if usuario_almacenar %}
+        value="{{ usuario_almacenar.nombre_persona }}" {% endif %} />
     </div>
 
-    <div class="form-group">
+    <div class="form-group col-md-6">
       <label for="usuario">Nombre de usuario</label>
-      <input
-        type="text"
-        class="form-control"
-        id="usuario"
-        name="nombre_usuario"
-        placeholder="Cree un usuario"
-        required
-        onblur="ValidarUsuario()"
-        {%
-        if
-        usuario_almacenar
-        %}
-        value="{{ usuario_almacenar.nombre_usuario }}"
-        {%
-        endif
-        %}
-      />
+      <input type="text" class="form-control" id="usuario" name="nombre_usuario" placeholder="Cree un usuario" required
+        onblur="ValidarUsuario()" {% if usuario_almacenar %} value="{{ usuario_almacenar.nombre_usuario }}" {% endif
+        %} />
       {% if errorusuario %}
-      <span
-        class="alert alert-danger"
-        role="alert"
-        id="ErrorUsuario"
-        style="display: block"
-      >
-        {{ errorusuario }}</span
-      >
+      <span class="alert alert-danger" role="alert" id="ErrorUsuario" style="display: block">
+        {{ errorusuario }}</span>
       {% endif %}
     </div>
 
     <div class="form-group col-md-6">
       <label for="password">Contraseña</label>
-      <input
-        type="password"
-        class="form-control"
-        id="password"
-        name="contraseña"
-        placeholder="Ingrese una contraseña"
-        required
-        {%
-        if
-        usuario_almacenar
-        %}
-        value="{{ usuario_almacenar.contraseña }}"
-        {%
-        endif
-        %}
-      />
+      <input type="password" class="form-control" id="password" name="contraseña" placeholder="Ingrese una contraseña"
+        required {% if usuario_almacenar %} value="{{ usuario_almacenar.contraseña }}" {% endif %} />
     </div>
 
     <div class="form-group col-md-6">
-      <label for="categoria">¿Cuál es su área?</label>
-      <select id="categoria" name="categoria" class="form-control">
-        <option selected>Por favor seleccione...</option>
-        {% for categoria in categorias %}
-        <option value="{{ categoria.id }}">
-          {{ categoria.nombre_categoria }}
-        </option>
-        {% endfor %}
+      <label for="tipo_usuario">¿Usted es?</label>
+      <select id="tipo_usuario" name="tipo_usuario" class="form-control">
+        <option value="">Por favor seleccione...</option>
+        <option value="cliente">Cliente </option>
+        <option value="empleado">Empleado</option>
       </select>
     </div>
 
