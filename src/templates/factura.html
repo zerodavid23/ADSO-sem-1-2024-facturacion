@@ -97,7 +97,7 @@
 {% if productos %}
 <div class="card mt -4">
   <div class="card header bg-secondary text-white">
-    <h4 class="mb-0">producto en la factura</h4>
+    <h4 class="mb-0">producto agregados en la factura</h4>
   </div>
   <div class="card-body p-0">
     <table class="table mb-0">
@@ -111,13 +111,13 @@
         </tr>
       </thead>
       <tbody>
-        {% for producto in productos %}
+        {% for p in productos %}
         <tr>
-          <td>{{producto.id_producto}}</td>
-          <td>{{producto.nombre_producto}}</td>
-          <td>{{producto.descripcion}}</td>
-          <td>{{producto.cantidad}}</td>
-          <td>{{producto.fecha}}</td>
+          <td>{{p.id_producto}}</td>
+          <td>{{p.nombre_producto}}</td>
+          <td>{{p.descripcion}}</td>
+          <td>{{p.cantidad}}</td>
+          <td>{{p.fecha}}</td>
         </tr>
         {% endfor %}
       </tbody>

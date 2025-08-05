@@ -15,6 +15,7 @@ from sqlalchemy.orm import joinedload
 class facturaController(FlaskController):
     @app.route('/factura', methods=['GET', 'POST'])
     def factura():
+        #previsualizador de la factura
         if 'productos' not in flask_session:
             flask_session['productos'] = []
         
@@ -22,7 +23,7 @@ class facturaController(FlaskController):
 
             # Obtener los datos del formulario
             correo = request.form.get('correo')
-            nombre_cli = request.form.get('nombre_usuario')
+            nombre_cli = request.form.get('nombre_cli')
             nombre_usuario = request.form.get('nombre_usuario')
             id_producto = request.form.get('id_producto')
             nombre_producto = request.form.get('nombre_producto')
@@ -60,41 +61,37 @@ class facturaController(FlaskController):
                                             productos=flask_session['productos'])
             # Verificar coincidencia exacta del usuario       
             usuario_object = db_session.query(usuario).filter_by(
-                correo=correo ,nombre_usuario=nombre_usuario).first()
-            if not usuario_object:
-                    return render_template('factura.html', 
-                                        titulo='Error: Usuario no encontrado',
-                                        Productos=flask_session['productos'])
-                
-            #buscar el producto por id y nombre de producto
+                correo=correo,
+                nombre_usuario=nombre_usuario
+                ).first()
             producto_object = db_session.query(Producto).filter_by(
-                id_producto=id_producto, nombre_producto=nombre_producto).first()
+                id_producto=id_producto, 
+                nombre_producto=nombre_producto
+                ).first()
 
-            if not producto_object:
-                    return render_template('factura.html', 
-                                        titulo='Error: Producto no encontrado',
-                                        productos=flask_session['productos'])
-            
             # Guardar producto temporalmente en session
             if accion == 'agregar_producto':        
                 producto_temp = {
                     'id_producto': id_producto,
                     'nombre_producto': nombre_producto,
                     'cantidad': cantidad_ingresada,
-                    'descripcion': producto_object.descripcion if producto_object else '',
+                    'descripcion': producto_object.descripcion,
                     'fecha': fecha
                 }
                 flask_session['productos'].append(producto_temp)
                 flask_session.modified = True
 
-                return render_template('factura.html',
-                                    titulo='Producto agregado',
-                                    productos=flask_session['productos'],
-                                    mensaje="Producto agregado correctamente.",
-                                    #sirve para mantener los datos del formulario
-                                    form_data={'correo': correo,
-                                               'nombre_cli': nombre_cli,
-                                               'nombre_usuario': nombre_usuario})
+                return render_template(
+                    'factura.html',
+                    titulo='Producto agregado',
+                    mensaje="Producto agregado correctamente.",
+                    form_data={
+                        'correo': correo,
+                        'nombre_cli': nombre_cli,
+                        'nombre_usuario': nombre_usuario
+                    },
+                    productos=flask_session['productos']
+                )
             
             # Crear factura si la acción es 'crear_factura'
             elif accion == 'crear_factura':
@@ -108,15 +105,13 @@ class facturaController(FlaskController):
                 db_session.commit() 
                 # Crear detalles de la factura para cada producto en el carrito
                 for prod in flask_session['productos']:
-                    producto_object = db_session.query(Producto).filter_by(id_producto=prod['id_producto']).first()
-                    if producto_object:
-                        detalle = DetalleFactura (
-                            id_factura=nueva_cabecera.id_factura,
-                            id_producto=producto_object.id_producto,
-                            cantidad=float(prod['cantidad']),
-                            precio_unitario=producto_object.precio_unitario,
-                        )
-                        db_session.add(detalle)
+                    detalle = DetalleFactura(
+                        id_factura=nueva_cabecera.id_factura,
+                        id_producto=prod['id_producto'],
+                        cantidad=float(prod['cantidad']),
+                        precio_unitario=producto_object.precio_unitario
+                    )
+                    db_session.add(detalle)
                 db_session.commit()
 
                 # Limpiar el carrito después de crear las facturas
@@ -139,8 +134,8 @@ class facturaController(FlaskController):
 
 
         return render_template('factura.html',
-                            titulo='Factura',
-                                productos=flask_session['productos'])
+                            titulo='Facturacion',
+                            productos=flask_session.get('productos', []))
 
 
 @app.route('/historial_facturas')
