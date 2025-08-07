@@ -23,8 +23,9 @@
     <tr>
       {% if loop.first %}
       <td rowspan="{{ factura.detalles|length }}">{{ factura.id_factura }}</td>
-      <td rowspan="{{ factura.detalles|length }}">{{ factura.usuario_object.correo }}</td>
-      <td rowspan="{{ factura.detalles|length }}">{{ factura.usuario_object.nombre_usuario }}</td>
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.empleado_object.correo }}</td>
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.empleado_object.nombre_usuario }}</td>
+      <td rowspan="{{ factura.detalles|length }}">{{ factura.cliente_object.nombre_usuario }}</td>
       <td rowspan="{{ factura.detalles|length }}">{{ factura.fecha }}</td>
       {% endif %}
       <td>{{ detalle.id_producto }}</td>

@@ -60,10 +60,13 @@ class facturaController(FlaskController):
                                             errornombreproducto="El nombre del producto ingresado no está registrado.",
                                             productos=flask_session['productos'])
             # Verificar coincidencia exacta del usuario       
-            usuario_object = db_session.query(usuario).filter_by(
+            usuario_empleado = db_session.query(usuario).filter_by(
                 correo=correo,
                 nombre_usuario=nombre_usuario
                 ).first()
+            usuario_cliente = db_session.query(usuario).filter_by(
+                 nombre_usuario=nombre_cli
+            ).first()
             producto_object = db_session.query(Producto).filter_by(
                 id_producto=id_producto, 
                 nombre_producto=nombre_producto
@@ -97,7 +100,8 @@ class facturaController(FlaskController):
             elif accion == 'crear_factura':
                 # nueva cabecera de factura
                 nueva_cabecera = Factura(  
-                      id_usuario=usuario_object.id_usuario,
+                     id_empleado=usuario_empleado.id_usuario,
+                      id_cliente=usuario_cliente.id_usuario,
                       fecha=fecha
                 )
                 # Guardar la cabecera de la factura
@@ -119,18 +123,18 @@ class facturaController(FlaskController):
                 flask_session.modified = True
 
                 # Consultar las facturas del usuario para mostrar
-            facturas_usuario = db_session.query(Factura)\
+            factura = db_session.query(Factura)\
                         .options(joinedload(Factura.detalles).joinedload(DetalleFactura.producto_object))\
-                        .filter_by(id_usuario=usuario_object.id_usuario)\
-                        .all()
+                        .get(nueva_cabecera.id_factura)
             # Calcula el total de la primera factura (o de la que necesites)
-            total = sum(det.total for det in facturas_usuario[0].detalles) if facturas_usuario else 0
+            total = sum(det.total for det in factura.detalles)
 
             return render_template('factura.html',
-                                titulo='Factura creada exitosamente',
-                                facturas=facturas_usuario,
-                                usuario=usuario_object,
-                                total=total)        
+                                factura=nueva_cabecera,
+                                cliente=nueva_cabecera.cliente_object,
+                                empleado=nueva_cabecera.empleado_object,
+                                detalles=nueva_cabecera.detalles,
+                                total=total)
 
 
         return render_template('factura.html',
@@ -156,12 +160,14 @@ def detalle_factura(id_factura):
     session = db_session
     factura = session.query(Factura).get(id_factura)
     detalles = session.query(DetalleFactura).filter_by(id_factura=id_factura).all()
-    cliente = session.query(usuario).get(factura.id_usuario)
+    cliente = session.query(usuario).get(factura.id_cliente)
+    empleado = session.query(usuario).get(factura.id_empleado) if hasattr(factura, 'id_empleado') else None
 
     total = sum(d.cantidad * float(d.precio_unitario) for d in detalles)
 
     return render_template('detalle_factura.html',
-                           factura=factura,
-                           detalles=detalles,
-                           cliente=cliente,
-                           total=total)
+                            factura=factura,
+                            cliente=cliente,
+                            empleado=empleado,
+                            detalles=detalles,
+                            total=total)

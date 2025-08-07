@@ -11,8 +11,8 @@ class usuario (Base):
     contraseña = Column(String(15), nullable=False)
     tipo_usuario = Column(String(10),nullable=False)
    
-    facturas = relationship('Factura', back_populates='usuario_object')
-
+    facturas_emitidas = relationship('Factura', back_populates='empleado_object',foreign_keys='Factura.id_empleado')
+    facturas_recibidas = relationship('Factura', back_populates='cliente_object',foreign_keys='Factura.id_cliente')
 
     def __init__ (self,correo,nombre_persona,nombre_usuario,contraseña,tipo_usuario):
         self.correo = correo 
