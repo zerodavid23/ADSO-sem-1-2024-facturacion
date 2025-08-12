@@ -9,36 +9,6 @@ from datetime import datetime, timezone
 acciones_bp = Blueprint('acciones', __name__)
 
 
-@acciones_bp.route('/eliminar_detalle/<int:id_detalle>', methods=['POST'])
-def eliminar_detalle(id_detalle):
-    detalle = db_session.get(DetalleFactura, id_detalle)
-    if not detalle:
-        return jsonify(success=False, error="detalle no encontrado"), 404
-
-    try:
-        db_session.delete(detalle)
-        db_session.commit()
-        return jsonify(success=True)
-    except Exception as e:
-        db_session.rollback()
-        return jsonify(success=False, error=str(e)), 500
-
-
-@acciones_bp.route('/eliminar_factura/<int:id_factura>', methods=['POST'])
-def eliminar_factura(id_factura):
-    factura = db_session.get(Factura, id_factura)
-    if not factura:
-        return jsonify(success=False, error="factura no encontrada"), 404
-
-    try:
-        db_session.delete(factura)
-        db_session.commit()
-        return jsonify(success=True)
-    except Exception as e:
-        db_session.rollback()
-        return jsonify(success=False, error=str(e)), 500
-
-
 @acciones_bp.route('/usuario/soft_delete/<int:id_usuario>', methods=['POST'])
 def usuario_soft_delete(id_usuario):
     usuario_obj = db_session.get(usuario, id_usuario)
@@ -108,14 +78,6 @@ def producto_soft_delete(id_producto):
     if not producto_obj:
         return jsonify(success=False, error="producto no encontrado"), 404
 
-    detalles_count = db_session.query(DetalleFactura).filter_by(id_producto=id_producto).count()
-    if detalles_count:
-        return jsonify(
-            success=False,
-            error="no se puede inactivar: producto está en detalles de facturas",
-            detalles={"detalles": detalles_count}
-        ), 400
-
     try:
         producto_obj.activo = False
         producto_obj.deleted_at = datetime.now(timezone.utc)   # CORRECCIÓN: deleted_at
@@ -139,3 +101,18 @@ def producto_restore(id_producto):
     except Exception as e:
         db_session.rollback()
         return jsonify(success=False, error=str(e)), 500
+    
+
+@acciones_bp.route('/producto/hard_delete/<int:id_producto>', methods=['POST'])
+def producto_hard_delete(id_producto):
+    producto_obj = db_session.get(Producto, id_producto)
+    if not producto_obj:
+        return jsonify(success=False, error="usuario no encontrado"), 404
+    
+    try:
+        db_session.delete(producto_obj)
+        db_session.commit()
+        return jsonify(success=True)
+    except  Exception as e:
+        db_session.rollback()
+        return jsonify(success=False,error=str(e)),500

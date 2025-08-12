@@ -39,8 +39,6 @@
         <div class="btn-group btn-group-toggle">
           <button class="btn btn-primary btn-sm"
             onclick="window.location.href='{{ url_for('detalle_factura', id_factura=factura.id_factura) }}';">Detalle</button>
-          <button class="btn btn-danger btn-sm"
-            onclick="eliminarDetalle({{ detalle.id_detalle }}, this)">Borrar</button>
         </div>
 
       </td>
