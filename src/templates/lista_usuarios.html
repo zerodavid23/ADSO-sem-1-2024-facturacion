@@ -1,4 +1,5 @@
-{%extends'layout.html' %} {%block contenido%}
+{% extends 'layout.html' %}
+{% block contenido %}
 <h2>Listado de usuarios</h2>
 <table class="table">
   <thead class="thead-dark">
@@ -9,40 +10,130 @@
       <th scope="col">usuario</th>
       <th scope="col">contraseña</th>
       <th scope="col">Tipo de usuario</th>
+      <th scope="col">estado</th>
       <th scope="col">Acciones</th>
     </tr>
   </thead>
   <tbody>
     {% for usuario in usuarios %}
-    <tr>
-      <th scope="row">{{usuario.id_usuario}}</th>
-      <td>{{usuario.correo}}</td>
-      <td>{{usuario.nombre_persona}}</td>
-      <td>{{usuario.nombre_usuario}}</td>
-      <td>{{usuario.contraseña}}</td>
-      <td>{{usuario.tipo_usuario}}</td>
-
+    <tr data-id="{{ usuario.id_usuario }}">
+      <th scope="row">{{ usuario.id_usuario }}</th>
+      <td>{{ usuario.correo }}</td>
+      <td>{{ usuario.nombre_persona }}</td>
+      <td>{{ usuario.nombre_usuario }}</td>
+      <td>{{ usuario.contraseña }}</td>
+      <td>{{ usuario.tipo_usuario }}</td>
+      <td class="estado">{{ 'Activo' if usuario.activo else 'Inactivo' }}</td>
       <td>
-        <button type="button" class="btn btn-success"
+        {% if usuario.activo %}
+        <!-- data-action construye la url para la petición POST -->
+        <button class="btn btn-warning btn-sm btn-soft-delete"
+          data-action="{{ url_for('acciones.usuario_soft_delete', id_usuario=usuario.id_usuario) }}">inactivar</button>
+        {% else %}
+        <button class="btn btn-success btn-sm btn-restore"
+          data-action="{{ url_for('acciones.usuario_restore', id_usuario=usuario.id_usuario) }}">restaurar</button>
+        <button class="btn btn-danger btn-sm btn-hard-delete"
+          data-action="{{ url_for('acciones.usuario_hard_delete', id_usuario=usuario.id_usuario) }}">eliminar
+          definitivamente</button>
+        {% endif %}
+        <button type="button" class="btn btn-success btn-sm"
           onclick="window.location.href='{{ url_for('formulario_Nue_usuario') }}';">
           Editar
         </button>
-
-        <button type="button" class="btn btn-danger" onclick="eliminarFila(this)">
-          Borrar
-        </button>
       </td>
     </tr>
-    {%endfor%}
+    {% endfor %}
   </tbody>
 </table>
 
+<!-- Modal simple -->
+<div id="confirmModal" style="display: none; position: fixed; left:0; top:0; right:0; bottom:0;
+     background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+  <div style="background:#fff; padding:1rem; width:360px; border-radius:6px; margin:auto;">
+    <h5 id="modalTitle">Confirmar</h5>
+    <p id="modalBody">¿Seguro?</p>
+    <div style="text-align: right;">
+      <button id="modalCancel" class="btn">Cancelar</button>
+      <button id="modalConfirm" class="btn btn-danger">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  function eliminarFila(boton) {
-    if (confirm("¿Seguro que deseas eliminar este producto?")) {
-      let fila = boton.closest("tr"); // Encuentra la fila donde está el botón
-      fila.remove(); // Elimina la fila de la tabla
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('confirmModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalConfirm = document.getElementById('modalConfirm');
+
+    let currentAction = null;
+    let currentId = null;
+
+    function showModal(title, body, confirmText = 'Confirmar') {
+      modalTitle.textContent = title;
+      modalBody.textContent = body;
+      modalConfirm.textContent = confirmText;
+      modal.style.display = 'flex';
     }
-  }
+    function hideModal() {
+      modal.style.display = 'none';
+      currentAction = null;
+      currentId = null;
+    }
+
+    modalCancel.addEventListener('click', hideModal);
+
+    modalConfirm.addEventListener('click', async () => {
+      if (!currentAction) return hideModal();
+      try {
+        const resp = await fetch(currentAction, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        const data = await resp.json().catch(() => ({}));
+
+        if (resp.ok && data.success) {
+          // operación exitosa: recargar para reflejar cambios
+          location.reload();
+        } else {
+          alert('Error: ' + (data.error || 'Problema desconocido'));
+        }
+      } catch (err) {
+        alert('Error en la petición: ' + err.message);
+      } finally {
+        hideModal();
+      }
+    });
+
+    // Delegación de clicks sobre la tabla
+    const table = document.querySelector('table');
+    if (!table) return;
+
+    table.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const tr = btn.closest('tr');
+      const id = tr ? tr.getAttribute('data-id') : null;
+
+      // Preferimos usar el atributo data-action que definimos en los botones
+      const actionUrl = btn.getAttribute('data-action');
+
+      if (btn.classList.contains('btn-soft-delete')) {
+        currentAction = actionUrl || `/usuario/soft_delete/${id}`;
+        currentId = id;
+        showModal('Inactivar usuario', '¿Deseas marcar este usuario como INACTIVO?', 'Inactivar');
+      } else if (btn.classList.contains('btn-restore')) {
+        currentAction = actionUrl || `/usuario/restore/${id}`;
+        currentId = id;
+        showModal('Restaurar usuario', '¿Deseas restaurar este usuario?', 'Restaurar');
+      } else if (btn.classList.contains('btn-hard-delete')) {
+        currentAction = actionUrl || `/usuario/hard_delete/${id}`;
+        currentId = id;
+        showModal('Eliminar definitivamente', 'Esta acción es irreversible. ¿Deseas continuar?', 'Eliminar');
+      }
+    });
+  });
 </script>
-{%endblock contenido%}
+{% endblock %}

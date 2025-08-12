@@ -39,7 +39,8 @@
         <div class="btn-group btn-group-toggle">
           <button class="btn btn-primary btn-sm"
             onclick="window.location.href='{{ url_for('detalle_factura', id_factura=factura.id_factura) }}';">Detalle</button>
-          <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Borrar</button>
+          <button class="btn btn-danger btn-sm"
+            onclick="eliminarDetalle({{ detalle.id_detalle }}, this)">Borrar</button>
         </div>
 
       </td>
@@ -52,12 +53,24 @@
 </table>
 
 <script>
-  function eliminarFila(boton) {
-    if (confirm("¿Seguro que deseas eliminar esta factura?")) {
-      const fila = boton.closest("tr");
-      // Si eliminas la factura entera, podrías redirigir o hacer petición AJAX aquí
-      fila.remove();
-    }
+  function eliminarDetalle(idDetalle, boton) {
+    if (!confirm("¿Deseas eliminar este producto de la factura?")) return;
+
+    fetch(`/eliminar_detalle/${idDetalle}`, {
+      method: 'POST',
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          boton.closest('tr').remove();
+        } else {
+          alert("Error al eliminar: " + (data.error || "Error desconocido"));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("No se pudo conectar con el servidor");
+      });
   }
 </script>
 {% endblock contenido %}

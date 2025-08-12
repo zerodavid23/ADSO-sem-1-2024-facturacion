@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, DateTime
 from src.models import session, Base
 from sqlalchemy.orm import relationship
 
@@ -10,6 +10,9 @@ class usuario (Base):
     nombre_usuario =Column(String(300), unique=True, nullable=False)
     contraseña = Column(String(15), nullable=False)
     tipo_usuario = Column(String(10),nullable=False)
+
+    activo = Column(Boolean, default=True, nullable=False)
+    deleted_at = Column(DateTime, nullable=True)
    
     facturas_emitidas = relationship('Factura', back_populates='empleado_object',foreign_keys='Factura.id_empleado')
     facturas_recibidas = relationship('Factura', back_populates='cliente_object',foreign_keys='Factura.id_cliente')

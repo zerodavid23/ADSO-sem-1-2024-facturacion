@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, DateTime
 from src.models import session, Base
 from src.models.categorias import Categoria
 from sqlalchemy.orm import relationship
@@ -14,7 +14,10 @@ class Producto (Base):
     unidad_medida = Column(String(3), nullable =False)
     categoria =Column (Integer,ForeignKey('Categoria.id'), nullable=False)
 
-   
+    activo = Column(Boolean, default=True, nullable=False)
+    deleted_at = Column(DateTime, nullable=True)
+
+
     detalles = relationship('DetalleFactura', back_populates='producto_object')
 
     def __init__ (self,nombre_producto,descripcion,cantidad_inventario,precio_unitario,unidad_medida,categoria):

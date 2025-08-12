@@ -1,5 +1,5 @@
 from src.models import session, Base
-from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -12,6 +12,8 @@ class Factura(Base):
     id_cliente = Column(Integer, ForeignKey('usuario.id_usuario'), nullable=False)
     fecha = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
   
+    activo = Column(Boolean, default=True, nullable=False)
+    deleted_at = Column(DateTime, nullable=True)
   
     empleado_object = relationship('usuario',foreign_keys=[id_empleado], back_populates='facturas_emitidas')
     cliente_object = relationship('usuario', foreign_keys=[id_cliente], back_populates='facturas_recibidas')
