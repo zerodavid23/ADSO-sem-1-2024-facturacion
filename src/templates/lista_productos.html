@@ -39,7 +39,7 @@
           definitivamente</button>
         {% endif %}
         <button type="button" class=" btn btn-success btn-sm"
-          onclick="window.location.href='{{ url_for('formulario_producto') }}';">
+          onclick="window.location.href='{{ url_for('formulario_producto', id_producto=producto.id_producto) }}';">
           Editar
         </button>
       </td>

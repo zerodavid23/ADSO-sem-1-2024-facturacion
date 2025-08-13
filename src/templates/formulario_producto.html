@@ -1,128 +1,128 @@
-{%extends 'layout.html'%}
-{%block contenido%}
-<div class="container mt-5">
+{% extends 'layout.html' %}
+{% block contenido %}
+
+<div class="container mt-4">
+  <h2> {{ 'Editar producto' if producto else 'Registrar producto' }} </h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, msg in messages %}
+  <div class="alert alert-{{ category }}"> {{ msg }} </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
   <div class="card shadow">
     <div class="card-header bg-primary text-white">
-      <h2 class="mb-0">Crear producto</h2>
+      <h2 class="mb-0">{{ 'Editar producto' if producto else 'Crear producto' }}</h2>
     </div>
     <div class="card-body">
-      <form id="ingresar_form" method="POST">
+      <form id="ingresar_form" method="POST"
+        action="{{ url_for('formulario_producto', id_producto=producto.id_producto) if producto else url_for('formulario_producto') }}">
         <div class="form-row">
           <div class="form-group col-md-6">
-            <label for="nombre">nombre del producto</label>
+            <label for="nombre">Nombre del producto</label>
             <input type="text" id="nombre" class="form-control" name="nombre"
-              placeholder="ingrese el nombre del producto" required onblur="ValidarNombre()" {% if producto_almacenar %}
-              value="{{ producto_almacenar.nombre }}" {% endif %} />
-            {% if errornomb %}
-            <span class="alert alert-danger" role="alert" id="ErrorNombre" style="display:block;">{{ errornomb }}</span>
-            {% endif %}
+              placeholder="Ingrese el nombre del producto" required onblur="ValidarNombre()"
+              value="{{ producto.nombre_producto if producto else '' }}" />
+            <span class="alert alert-danger" role="alert" id="ErrorNombre" style="display:none;"></span>
           </div>
 
           <div class="form-group col-md-6">
             <label for="descripcion">Descripción</label>
-            <input type="text" id="descripcion" class="form-control" name="descripcion" {% if producto_almacenar %}
-              value="{{ producto_almacenar.descripcion }}" {% endif %}
-              placeholder="ingrese una descripcion del producto" onblur="ValidarDescripcion()" required />
-            {% if errordescr %}
-            <span class="alert alert-danger" role="alert" id="ErrorDescripcion" style="display: block;"> {{
-              errordescr }} </span>
-            {% endif %}
-
+            <input type="text" id="descripcion" class="form-control" name="descripcion"
+              placeholder="Ingrese una descripción del producto" onblur="ValidarDescripcion()" required
+              value="{{ producto.descripcion if producto else '' }}" />
+            <span class="alert alert-danger" role="alert" id="ErrorDescripcion" style="display: none;"></span>
           </div>
+
           <div class="form-group col-md-6">
             <label for="cantidad_inventario">Cantidad Inventario</label>
-            <input type="number" id="cantidad_inventario" class="form-control" name="cantidad_inventario" required {% if
-              producto_almacenar %} value="{{ producto_almacenar.cantidad_inventario }}" {% endif %} />
+            <input type="number" id="cantidad_inventario" class="form-control" name="cantidad_inventario" required
+              step="0.01" min="0"
+              value="{{ producto.cantidad_inventario if producto and producto.cantidad_inventario is not none else '' }}" />
           </div>
+
           <div class="form-group col-md-6">
             <label for="precio_unitario">Precio Unitario</label>
             <input type="number" id="precio_unitario" class="form-control" name="precio_unitario" required
-              onblur="ValidarPrecio()" {% if producto_almacenar %} value="{{ producto_almacenar.precio_unitario }}" {%
-              endif %} />
+              onblur="ValidarPrecio()" step="0.01" min="0"
+              value="{{ producto.precio_unitario if producto and producto.precio_unitario is not none else '' }}" />
+            <span class="alert alert-danger" role="alert" id="ErrorPrecio" style="display:none">El precio no es válido,
+              use un formato como 123 o 123.45 sin espacios</span>
           </div>
-          <span class="alert alert-danger" role="alert" id="ErrorPrecio" style="display:none">el precio no es
-            valido, use un formato como 123 o 123.45 sin espacios</span>
         </div>
 
-        <div class="form-row">
+        <div class="form-row mt-3">
           <div class="form-group col-md-4">
             <label for="unidad_medida">Unidad de Medida</label>
-            <select name="unidad_medida" id="unidad_medida" class="form-control">
-              <option selected>Por favor seleccione...</option>
-              <option value="GR">GR</option>
-              <option value="UND">UND</option>
+            <select name="unidad_medida" id="unidad_medida" class="form-control" required>
+              <option value="">Por favor seleccione...</option>
+              <option value="GR" {% if producto and producto.unidad_medida=='GR' %}selected{% endif %}>GR</option>
+              <option value="UND" {% if producto and producto.unidad_medida=='UND' %}selected{% endif %}>UND</option>
             </select>
           </div>
+
           <div class="form-group col-md-4">
-            <label for="categoria">Categoria</label>
-            <select id="categoria" name="categoria" class="form-control">
-              <option selected>Por favor seleccione...</option>
-
-              {% for categoria in categorias %}
-
-              <option value="{{categoria.id}}">{{categoria.nombre_categoria}}</option>
-
+            <label for="categoria">Categoría</label>
+            <select id="categoria" name="categoria" class="form-control" required>
+              <option value="">Por favor seleccione...</option>
+              {% for cat in categorias %}
+              <option value="{{ cat.id }}" {% if producto and producto.categoria==cat.id %}selected{% endif %}>
+                {{ cat.nombre_categoria }}
+              </option>
               {% endfor %}
             </select>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <a href="{{ url_for('lista_productos') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
       </form>
     </div>
   </div>
 </div>
+
 <script type="text/javascript">
   function ValidarNombre() {
-    console.log("entro a la funcion");
     let CampoNombre = document.getElementById("nombre");
     let ValorNombre = CampoNombre.value;
     let ErrorNombre = document.getElementById("ErrorNombre");
-    console.log("el valor escrtio es: " + ValorNombre);
-    var expresionregular = new RegExp("[a-zA-Z\s]+")
+    var expresionregular = new RegExp("^[a-zA-Z\\s]+$");
     if (expresionregular.test(ValorNombre) && ValorNombre.trim() !== "") {
-      console.log("el campo cumple la validacion");
       ErrorNombre.style.display = 'none';
     } else {
-      console.log("el campo no cumple la validacion");
       ErrorNombre.style.display = 'block';
+      ErrorNombre.innerText = "El nombre no es válido";
     }
   }
 
-</script>
-
-<script type="text/javascript">
   function ValidarDescripcion() {
-    console.log("Entró a la función de validación de descripción");
     let CampoDescripcion = document.getElementById("descripcion");
     let ValorDescripcion = CampoDescripcion.value;
     let ErrorDescripcion = document.getElementById("ErrorDescripcion");
-    console.log("El valor escrito es: " + ValorDescripcion);
     var expresionregular = new RegExp("^[a-zA-Z0-9.,¡!¿?()\"'\\s]+$");
     if (expresionregular.test(ValorDescripcion) && ValorDescripcion.trim() !== "") {
-      console.log("El campo cumple la validación");
       ErrorDescripcion.style.display = 'none';
     } else {
-      console.log("El campo no cumple la validación");
       ErrorDescripcion.style.display = 'block';
+      ErrorDescripcion.innerText = "La descripción no es válida";
     }
   }
-</script>
 
-<script type="text/javascript">
   function ValidarPrecio() {
     let CampoPrecio = document.getElementById("precio_unitario");
     let ValorPrecio = CampoPrecio.value;
     let ErrorPrecio = document.getElementById("ErrorPrecio");
-    console.log("el valor escrtio es: " + ValorPrecio);
-    var expresionregular = new RegExp("\\d+(\\.\\d{1,2})?")
+    var expresionregular = new RegExp("^\\d+(\\.\\d{1,2})?$");
     if (expresionregular.test(ValorPrecio)) {
-      console.log("el campo cumple la validacion");
       ErrorPrecio.style.display = 'none';
     } else {
-      console.log("el campo no cumple la validacion");
       ErrorPrecio.style.display = 'block';
     }
   }
-
 </script>
-{%endblock contenido%}
+
+{% endblock contenido %}
