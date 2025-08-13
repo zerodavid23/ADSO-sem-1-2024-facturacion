@@ -95,7 +95,6 @@
         const data = await resp.json().catch(() => ({}));
 
         if (resp.ok && data.success) {
-          // operación exitosa: recargar para reflejar cambios
           location.reload();
         } else {
           alert('Error: ' + (data.error || 'Problema desconocido'));

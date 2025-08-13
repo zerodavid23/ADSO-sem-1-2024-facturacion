@@ -113,7 +113,7 @@ class facturaController(FlaskController):
             
             # Crear factura si la acción es 'crear_factura'
             elif accion == 'crear_factura':
-                prod_to_add = None
+                añadir_prod = None
                 # nueva cabecera de factura
                 if id_producto and nombre_producto:
                     if not any(str(p['id_producto']) == str(id_producto)for p in flask_session['productos']):
@@ -121,16 +121,16 @@ class facturaController(FlaskController):
                             cantidad_val = float(cantidad_ingresada)
                         except:
                             cantidad_val = 0.0
-                        prod_to_add = {
+                        añadir_prod = {
                                 'id_producto': int(id_producto),
                                 'nombre_producto': nombre_producto,
                                 'cantidad': cantidad_val,
                                 'descripcion': producto_object.descripcion if producto_object else '',
-                                'fecha': fecha_str or None
+                                'fecha': fecha_str or datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
                         }
-                if prod_to_add:
+                if añadir_prod:
                 # Limpiar el carrito después de crear las facturas
-                    flask_session['productos'].append(prod_to_add)
+                    flask_session['productos'].append(añadir_prod)
                     flask_session.modified = True
                 
             usuario_empleado = db_session.query(usuario).filter_by(

@@ -15,16 +15,9 @@ def usuario_soft_delete(id_usuario):
     if not usuario_obj:
         return jsonify(success=False, error="usuario no encontrado"), 404
 
-    # <-- OPCIÓN: permitir marcar como inactivo aunque tenga facturas.
-    # Si deseas impedirlo, descomenta la comprobación y devuelve error.
-    # emitidas = db_session.query(Factura).filter_by(id_empleado=id_usuario).count()
-    # recibidas = db_session.query(Factura).filter_by(id_cliente=id_usuario).count()
-    # if emitidas or recibidas:
-    #     return jsonify(success=False, error="El usuario tiene facturas relacionadas"), 400
-
     try:
         usuario_obj.activo = False
-        usuario_obj.deleted_at = datetime.now(timezone.utc)   # CORRECCIÓN: deleted_at (no deletead_at)
+        usuario_obj.deleted_at = datetime.now(timezone.utc)  
         db_session.commit()
         return jsonify(success=True)
     except Exception as e:
@@ -53,7 +46,7 @@ def usuario_hard_delete(id_usuario):
     if not usuario_obj:
         return jsonify(success=False, error="Usuario no encontrado"), 404
 
-    # Comprobación para prevenir borrado si hay facturas
+    # si existe el dato no las elimina
     emitidas = db_session.query(Factura).filter_by(id_empleado=id_usuario).count()
     recibidas = db_session.query(Factura).filter_by(id_cliente=id_usuario).count()
     if emitidas or recibidas:
@@ -80,7 +73,7 @@ def producto_soft_delete(id_producto):
 
     try:
         producto_obj.activo = False
-        producto_obj.deleted_at = datetime.now(timezone.utc)   # CORRECCIÓN: deleted_at
+        producto_obj.deleted_at = datetime.now(timezone.utc)  
         db_session.commit()
         return jsonify(success=True)
     except Exception as e:

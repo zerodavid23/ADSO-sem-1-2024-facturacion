@@ -85,7 +85,6 @@
 
         <div class="form-row">
           <div class="col text-right">
-            <!-- type=button evita submit por defecto; el JS agregará accion hidden y hará submit -->
             <button type="button" class="btn btn-success" id="agregarproducto">Agregar producto</button>
             <button type="button" class="btn btn-info" id="lista_facturas"
               onclick="window.location.href='{{ url_for('historial_facturas') }}';">historial de facturas</button>
@@ -98,7 +97,7 @@
     </div>
   </div>
 
-  <!-- carrito de productos (session) -->
+  <!-- if para el añadir los prodcutos tipo carrito de compras -->
   {% if productos and productos|length > 0 %}
   <div class="card mt-4">
     <div class="card-header bg-secondary text-white">
@@ -133,7 +132,7 @@
   <div class="alert alert-info mt-4">no se ha encontrado ningun producto</div>
   {% endif %}
 
-  {# Mostrar factura creada (la plantilla espera 'facturas' como lista) #}
+
   {% if facturas %}
   <div id="factura" class="card mt-4 shadow" style="display: block">
     <div class="card-header bg-success text-white">
@@ -192,14 +191,11 @@
       accionInput.setAttribute("name", "accion");
       accionInput.setAttribute("value", "agregar_producto");
       form.appendChild(accionInput);
-
-      // submit del form
       form.submit();
     });
   });
 </script>
 
-<!-- Validaciones JS (solo mensajes simples) -->
 <script>
   function ValidarCorreo() {
     let ValorCorreo = document.getElementById("correo").value;

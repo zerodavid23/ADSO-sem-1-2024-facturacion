@@ -46,7 +46,7 @@
   </tbody>
 </table>
 
-<!-- Modal simple -->
+
 <div id="confirmModal" style="display: none; position: fixed; left:0; top:0; right:0; bottom:0;
      background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
   <div style="background:#fff; padding:1rem; width:360px; border-radius:6px; margin:auto;">
@@ -95,7 +95,7 @@
         const data = await resp.json().catch(() => ({}));
 
         if (resp.ok && data.success) {
-          // operación exitosa: recargar para reflejar cambios
+
           location.reload();
         } else {
           alert('Error: ' + (data.error || 'Problema desconocido'));
