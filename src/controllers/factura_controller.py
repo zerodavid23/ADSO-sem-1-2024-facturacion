@@ -7,6 +7,7 @@ from src.models.detalle_factura import DetalleFactura
 from src.models.productos import Producto
 from src.models.usuarios import usuario
 from sqlalchemy.orm import joinedload
+from datetime import datetime,timezone
 
 
 
@@ -22,13 +23,13 @@ class facturaController(FlaskController):
         if request.method == 'POST':
 
             # Obtener los datos del formulario
-            correo = request.form.get('correo')
-            nombre_cli = request.form.get('nombre_cli')
-            nombre_usuario = request.form.get('nombre_usuario')
-            id_producto = request.form.get('id_producto')
-            nombre_producto = request.form.get('nombre_producto')
-            cantidad_ingresada = request.form.get('cantidad_ingresada')
-            fecha = request.form.get('fecha')
+            correo = request.form.get('correo','').strip()
+            nombre_cli = request.form.get('nombre_cli','').strip()
+            nombre_usuario = request.form.get('nombre_usuario','').strip()
+            id_producto = request.form.get('id_producto','').strip()
+            nombre_producto = request.form.get('nombre_producto','').strip()
+            cantidad_ingresada = request.form.get('cantidad_ingresada','').strip()
+            fecha_str = request.form.get('fecha','').strip()
             accion = request.form.get('accion')
             print("accion recibida:", accion)
 
@@ -37,49 +38,64 @@ class facturaController(FlaskController):
             if correo_erroneo is None or correo == '':
                 return render_template('factura.html', titulo='Error: Correo no encontrado',
                                             errorcorreo="El correo ingresado no está registrado.",
-                                            productos=flask_session['productos'])
+                                            productos=flask_session['productos'],
+                                            form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario})
             cliente_erroneo = usuario.traer_usuarios_usuario(nombre_cli)
             if cliente_erroneo is None or nombre_cli == '':
                  return render_template('factura.html', titulo='Error: usuario de cliente no encontrado',
                                         errorcliente="el nombre del usuario cliente no esta registrado. ",
-                                        productos=flask_session['productos'])
+                                        productos=flask_session['productos'],
+                                        form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario})
 
             usuario_erroneo = usuario.traer_usuarios_usuario(nombre_usuario)
             if usuario_erroneo is None or nombre_usuario == '':
                     return render_template('factura.html', titulo='Errror: usuario de empleado no encontrado',
                                         errorusuario="el nombre de usuario ingresado no esta registrado.",
-                                            productos=flask_session['productos'])
-            id_producto_erroneo = Producto.traer_producto_id(id_producto)
-            if id_producto_erroneo is None or id_producto == '':
-                    return render_template('factura.html', titulo='Error: Producto no encontrado',
-                                        erroridproducto="El ID del producto ingresado no está registrado.",
-                                        productos=flask_session['productos'])
-            nombre_producto_erroneo = Producto.traer_producto_nombre(nombre_producto)
-            if nombre_producto_erroneo is None or nombre_producto == '':
-                        return render_template('factura.html', titulo='Error: Producto no encontrado',
-                                            errornombreproducto="El nombre del producto ingresado no está registrado.",
-                                            productos=flask_session['productos'])
-            # Verificar coincidencia exacta del usuario       
-            usuario_empleado = db_session.query(usuario).filter_by(
-                correo=correo,
-                nombre_usuario=nombre_usuario
-                ).first()
-            usuario_cliente = db_session.query(usuario).filter_by(
-                 nombre_usuario=nombre_cli
-            ).first()
-            producto_object = db_session.query(Producto).filter_by(
-                id_producto=id_producto, 
-                nombre_producto=nombre_producto
-                ).first()
+                                            productos=flask_session['productos'],
+                                            form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario})
+            producto_object = None
+            if id_producto:
+                producto_object= Producto.traer_producto_id(id_producto)
+                if producto_object is None:
+                    return render_template(
+                        'factura.html',
+                        titulo='error: producto no encontrado',
+                        erroidproducto="el id del producto ingresado no esta registrado",
+                        productos=flask_session['productos'],
+                        form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario}
+                    )
+                if nombre_producto and not producto_object:
+                    producto_object =Producto.traer_producto_nombre(nombre_producto)
+                    if producto_object is None:
+                        return render_template(
+                            'factura.html',
+                            titulo='error:producto no encontrado',
+                            errornombreproducto="el nombre del producto ingresado no esta registrado",
+                            productos=flask_session['productos'],
+                            form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario}
+                        )
 
             # Guardar producto temporalmente en session
-            if accion == 'agregar_producto':        
+            if accion == 'agregar_producto':   
+                try:
+                    cantidad_val =float(cantidad_ingresada)
+                except:
+                    cantidad_val = None
+                    if not producto_object or cantidad_val  is None:
+                        return render_template(
+                            'factura.html',
+                            titulo='error al agregar producto',
+                            mensaje='producto o cantidad invalida',
+                            productos =flask_session['productos'],
+                            form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario}
+
+                        )
                 producto_temp = {
-                    'id_producto': id_producto,
-                    'nombre_producto': nombre_producto,
-                    'cantidad': cantidad_ingresada,
+                    'id_producto': int(producto_object.id_producto),
+                    'nombre_producto': producto_object.nombre_producto,
+                    'cantidad': cantidad_val,
                     'descripcion': producto_object.descripcion,
-                    'fecha': fecha
+                    'fecha': fecha_str or None
                 }
                 flask_session['productos'].append(producto_temp)
                 flask_session.modified = True
@@ -91,56 +107,104 @@ class facturaController(FlaskController):
                     form_data={
                         'correo': correo,
                         'nombre_cli': nombre_cli,
-                        'nombre_usuario': nombre_usuario
-                    },
+                        'nombre_usuario': nombre_usuario},
                     productos=flask_session['productos']
                 )
             
             # Crear factura si la acción es 'crear_factura'
             elif accion == 'crear_factura':
+                prod_to_add = None
                 # nueva cabecera de factura
-                nueva_cabecera = Factura(  
-                     id_empleado=usuario_empleado.id_usuario,
-                      id_cliente=usuario_cliente.id_usuario,
-                      fecha=fecha
+                if id_producto and nombre_producto:
+                    if not any(str(p['id_producto']) == str(id_producto)for p in flask_session['productos']):
+                        try:
+                            cantidad_val = float(cantidad_ingresada)
+                        except:
+                            cantidad_val = 0.0
+                        prod_to_add = {
+                                'id_producto': int(id_producto),
+                                'nombre_producto': nombre_producto,
+                                'cantidad': cantidad_val,
+                                'descripcion': producto_object.descripcion if producto_object else '',
+                                'fecha': fecha_str or None
+                        }
+                if prod_to_add:
+                # Limpiar el carrito después de crear las facturas
+                    flask_session['productos'].append(prod_to_add)
+                    flask_session.modified = True
+                
+            usuario_empleado = db_session.query(usuario).filter_by(
+                correo = correo,
+                nombre_usuario=nombre_usuario
+            ).first()
+            usuario_cliente = db_session.query(usuario).filter_by(
+                nombre_usuario=nombre_cli
+            ).first()
+            if not usuario_empleado or not usuario_cliente:
+                return render_template(
+                    'factura.html',
+                    titulo='error usuario no valido',
+                    errorusuario='empleado o cliente invalido',
+                    productos=flask_session['productos'],
+                    form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario}
                 )
-                # Guardar la cabecera de la factura
+            if fecha_str:
+                try:
+                    fecha_obj = datetime.strptime(fecha_str, '%Y-%m-%d')
+                except Exception:
+                    fecha_obj = datetime.now(timezone.utc)
+                else:
+                    fecha_obj =datetime.now(timezone.utc)
+
+                nueva_cabecera = Factura(
+                    id_empleado=usuario_empleado.id_usuario,
+                    id_cliente=usuario_cliente.id_usuario,
+                    fecha=fecha_obj
+                )
                 db_session.add(nueva_cabecera)
-                db_session.commit() 
-                # Crear detalles de la factura para cada producto en el carrito
+                db_session.commit()  # para obtener id_factura      
+
                 for prod in flask_session['productos']:
+                    prod_row = db_session.get(Producto, int(prod['id_producto']))
+                    precio_unit = float(prod_row.precio_unitario) if prod_row and prod_row.precio_unitario is not None else 0.0
+
                     detalle = DetalleFactura(
-                        id_factura=nueva_cabecera.id_factura,
-                        id_producto=prod['id_producto'],
+                        id_factura= nueva_cabecera.id_factura,
+                        id_producto= int(prod['id_producto']),
                         cantidad=float(prod['cantidad']),
-                        precio_unitario=producto_object.precio_unitario
+                        precio_unitario=precio_unit
+
                     )
                     db_session.add(detalle)
-                db_session.commit()
+                    db_session.commit()
 
-                # Limpiar el carrito después de crear las facturas
-                flask_session['productos'] = []
-                flask_session.modified = True
+                    factura_creada = db_session.query(Factura)\
+                    .options(joinedload(Factura.detalles).joinedload(DetalleFactura.producto_object))\
+                    .get(nueva_cabecera.id_factura)
 
+                    total =sum(float(det.cantidad) * float (det.precio_unitario) for det in factura_creada.detalles)
+
+                    flask_session['productos'] = []
+                    flask_session.modified = True
                 # Consultar las facturas del usuario para mostrar
-            factura = db_session.query(Factura)\
-                        .options(joinedload(Factura.detalles).joinedload(DetalleFactura.producto_object))\
-                        .get(nueva_cabecera.id_factura)
-            # Calcula el total de la primera factura (o de la que necesites)
-            total = sum(det.total for det in factura.detalles)
+          
 
-            return render_template('factura.html',
-                                factura=nueva_cabecera,
-                                cliente=nueva_cabecera.cliente_object,
-                                empleado=nueva_cabecera.empleado_object,
-                                detalles=nueva_cabecera.detalles,
-                                total=total)
+                return render_template('factura.html',
+                                    titulo='factura creada',
+                                        facturas=[factura_creada],
+                                        usuario=usuario_cliente,
+                                        empleado=usuario_empleado,
+                                        total=total)
 
-
-        return render_template('factura.html',
+            return render_template(
+                            'factura.html',
                             titulo='Facturacion',
-                            productos=flask_session.get('productos', []))
-
+                            productos=flask_session['productos'],
+                            form_data={'correo': correo, 'nombre_cli': nombre_cli, 'nombre_usuario': nombre_usuario}
+                        )
+        return render_template('factura.html',
+                                titulo='Facturacion',
+                                productos=flask_session.get('productos', []))
 
 @app.route('/historial_facturas')
 def historial_facturas():

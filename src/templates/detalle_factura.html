@@ -1,14 +1,23 @@
 {% extends 'layout.html' %} {% block contenido %}
+<div class="container mt-3">
+  <div class="card shadow ">
+    <div class="card-header bg text-dark">
+      <table class="table table-bordered">
+        <thead class="thead -dark">
+          <h2 class="mb-0">Factura #{{ factura.id_factura }}</h2>
+          <p>Emitida por el empleado: {{ empleado.nombre_usuario }}</p>
+          <p>Cliente: {{ cliente.nombre_usuario }}</p>
+          <p>Fecha: {{ factura.fecha }}</p>
+        </thead>
+    </div>
+  </div>
+</div>
 
-<h2>Factura #{{ factura.id_factura }}</h2>
-<p>Emitida por el empleado: {{ empleado.nombre_usuario }}</p>
-<p>Cliente: {{ cliente.nombre_usuario }}</p>
-<p>Fecha: {{ factura.fecha }}</p>
-
+</table>
 
 <h3>Productos:</h3>
 <table class="table table-bordered">
-  <thead>
+  <thead class="thead-dark">
     <tr>
       <th>Codigo</th>
       <th>Nombre</th>
@@ -33,6 +42,7 @@
     {% endfor %}
   </tbody>
 </table>
-<h4 class="text-right">Total: ${{ '%.2f'|format(total) }}</h4>
-
+<div class="alert alert-dark" role="alert">
+  <h4 class="text-right">Total: ${{ '%.2f'|format(total) }}</h4>
+</div>
 {% endblock contenido %}
