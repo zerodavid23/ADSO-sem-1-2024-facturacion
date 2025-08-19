@@ -1,60 +1,76 @@
-{% extends 'layout.html' %} {% block contenido %}
+{% extends 'layout.html' %}
+{% block contenido %}
+
 <div class="container mt-5">
   <div class="card shadow">
     <div class="card-header bg-primary text-white">
       <h2 class="mb-0">Registrarse</h2>
     </div>
-    <form id="registroform" method="POST">
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="correo">Correo</label>
-          <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese un correo" required
-            onblur="validarcorreo()" {% if usuario_almacenar %} value="{{ usuario_almacenar.correo }}" {% endif %} />
-          {% if errorcorreo %}
-          <span class="alert alert-danger" role="alert" id="ErrorCorreo" style="display: block">
-            {{ errorcorreo }}
-          </span>
-          {% endif %}
+
+    <div class="card-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, msg in messages %}
+      <div class="alert alert-{{ category }}">{{ msg }}</div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <form id="registroform" method="POST" action="{{ url_for('formulario_Nue_usuario') }}">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="correo">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese un correo" required
+              value="{{ form_data.correo if form_data and form_data.correo is defined else (usuario_almacenar.correo if usuario_almacenar is defined else '') }}"
+              onblur="validarcorreo()" />
+            <span class="alert alert-danger" role="alert" id="ErrorCorreo" style="display: none">
+              {{ errorcorreo if errorcorreo is defined else '' }}
+            </span>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="nombrecm">Nombre completo</label>
+            <input type="text" class="form-control" id="nombrecm" name="nombre_persona"
+              placeholder="Ingrese su nombre completo" required
+              value="{{ form_data.nombre_persona if form_data and form_data.nombre_persona is defined else (usuario_almacenar.nombre_persona if usuario_almacenar is defined else '') }}" />
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="usuario">Nombre de usuario</label>
+            <input type="text" class="form-control" id="usuario" name="nombre_usuario" placeholder="Cree un usuario"
+              required onblur="ValidarUsuario()"
+              value="{{ form_data.nombre_usuario if form_data and form_data.nombre_usuario is defined else (usuario_almacenar.nombre_usuario if usuario_almacenar is defined else '') }}" />
+            <span class="alert alert-danger" role="alert" id="ErrorUsuario" style="display: none">
+              {{ errorusuario if errorusuario is defined else '' }}
+            </span>
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="contraseña"
+              placeholder="Ingrese una contraseña" required />
+            <!-- No rellenar el valor del password por seguridad -->
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="tipo_usuario">¿Usted es?</label>
+            <select id="tipo_usuario" name="tipo_usuario" class="form-control" required>
+              <option value="">Por favor seleccione...</option>
+              <option value="cliente" {% if (form_data and form_data.tipo_usuario=='cliente' ) or (usuario_almacenar and
+                usuario_almacenar.tipo_usuario=='cliente' ) %}selected{% endif %}>Cliente</option>
+              <option value="empleado" {% if (form_data and form_data.tipo_usuario=='empleado' ) or (usuario_almacenar
+                and usuario_almacenar.tipo_usuario=='empleado' ) %}selected{% endif %}>Empleado</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group col-md-6">
-          <label for="nombrecm">Nombre completo</label>
-          <input type="text" class="form-control" id="nombrecm" name="nombre_persona"
-            placeholder="Ingrese su nombre completo" required {% if usuario_almacenar %}
-            value="{{ usuario_almacenar.nombre_persona }}" {% endif %} />
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-primary">Registrarse</button>
+          <a href="{{ url_for('formulario_usuario') }}" class="btn btn-link">Ya tengo cuenta</a>
         </div>
-
-        <div class="form-group col-md-6">
-          <label for="usuario">Nombre de usuario</label>
-          <input type="text" class="form-control" id="usuario" name="nombre_usuario" placeholder="Cree un usuario"
-            required onblur="ValidarUsuario()" {% if usuario_almacenar %} value="{{ usuario_almacenar.nombre_usuario }}"
-            {% endif %} />
-          {% if errorusuario %}
-          <span class="alert alert-danger" role="alert" id="ErrorUsuario" style="display: block">
-            {{ errorusuario }}</span>
-          {% endif %}
-        </div>
-
-        <div class="form-group col-md-6">
-          <label for="password">Contraseña</label>
-          <input type="password" class="form-control" id="password" name="contraseña"
-            placeholder="Ingrese una contraseña" required {% if usuario_almacenar %}
-            value="{{ usuario_almacenar.contraseña }}" {% endif %} />
-        </div>
-
-        <div class="form-group col-md-6">
-          <label for="tipo_usuario">¿Usted es?</label>
-          <select id="tipo_usuario" name="tipo_usuario" class="form-control">
-            <option value="">Por favor seleccione...</option>
-            <option value="cliente">Cliente </option>
-            <option value="empleado">Empleado</option>
-          </select>
-        </div>
-      </div>
-      <div class="text-center mt-6"></div>
-      <button type="submit" class="btn btn-primary">Registrarse</button>
+      </form>
+    </div>
   </div>
-  </form>
 </div>
 
 <script type="text/javascript">
@@ -62,28 +78,27 @@
     let CampoCorreo = document.getElementById("correo");
     let ValorCorreo = CampoCorreo.value;
     let ErrorCorreo = document.getElementById("ErrorCorreo");
-    var expresionregular = new RegExp(
-      "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-    );
+    var expresionregular = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (expresionregular.test(ValorCorreo)) {
       ErrorCorreo.style.display = "none";
     } else {
       ErrorCorreo.style.display = "block";
+      ErrorCorreo.innerText = "El correo no es válido";
     }
   }
-</script>
 
-<script type="text/javascript">
   function ValidarUsuario() {
     let CampoUsuario = document.getElementById("usuario");
     let ValorUsuario = CampoUsuario.value;
     let ErrorUsuario = document.getElementById("ErrorUsuario");
-    var expresionregular = new RegExp("^[a-zA-Z0-9._]{3,20}$");
+    var expresionregular = /^[a-zA-Z0-9._]{3,20}$/;
     if (expresionregular.test(ValorUsuario)) {
       ErrorUsuario.style.display = "none";
     } else {
       ErrorUsuario.style.display = "block";
+      ErrorUsuario.innerText = "El usuario debe tener 3-20 caracteres (letras, números, . _ )";
     }
   }
 </script>
-{%endblock contenido%}
+
+{% endblock %}

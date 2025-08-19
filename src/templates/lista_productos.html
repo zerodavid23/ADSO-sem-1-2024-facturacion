@@ -25,21 +25,35 @@
       <td>{{producto.precio_unitario}}</td>
       <td>{{producto.unidad_medida}}</td>
       <td>{{producto.categoria}}</td>
-      <td class="estado">{{ 'Activo' if producto.activo else 'Inactivo'}} </td>
+      <td class="estado">{{ 'Activo' if producto.activo else 'Inactivo'}}</td>
 
       <td>
         {% if producto.activo %}
-        <button class="btn btn-warning btn-sm btn-soft-delete"
-          data-action="{{ url_for('acciones.producto_soft_delete', id_producto=producto.id_producto) }}">inactivar</button>
+        <button
+          class="btn btn-warning btn-sm btn-soft-delete"
+          data-action="{{ url_for('acciones.producto_soft_delete', id_producto=producto.id_producto) }}"
+        >
+          inactivar
+        </button>
         {% else %}
-        <button class="btn btn-success btn-sm btn-restore"
-          data-action=" {{ url_for('acciones.producto_restore', id_producto=producto.id_producto) }}">restaurar</button>
-        <button class="btn btn-danger btn-sm btn-hard-delete"
-          data-action="{{ url_for('acciones.producto_hard_delete', id_producto=producto.id_producto) }}">eliminar
-          definitivamente</button>
+        <button
+          class="btn btn-success btn-sm btn-restore"
+          data-action=" {{ url_for('acciones.producto_restore', id_producto=producto.id_producto) }}"
+        >
+          restaurar
+        </button>
+        <button
+          class="btn btn-danger btn-sm btn-hard-delete"
+          data-action="{{ url_for('acciones.producto_hard_delete', id_producto=producto.id_producto) }}"
+        >
+          eliminar definitivamente
+        </button>
         {% endif %}
-        <button type="button" class=" btn btn-success btn-sm"
-          onclick="window.location.href='{{ url_for('formulario_producto', id_producto=producto.id_producto) }}';">
+        <button
+          type="button"
+          class="btn btn-success btn-sm"
+          onclick="window.location.href='{{ url_for('formulario_producto', id_producto=producto.id_producto) }}';"
+        >
           Editar
         </button>
       </td>
@@ -47,12 +61,32 @@
     {% endfor %}
   </tbody>
 </table>
-<div id="confirmModal" style="display: none; position: fixed; left:0; top:0; right:0; bottom:0;
-     background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
-  <div style="background:#fff; padding:1rem; width:360px; border-radius:6px; margin:auto;">
+<div
+  id="confirmModal"
+  style="
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+  "
+>
+  <div
+    style="
+      background: #fff;
+      padding: 1rem;
+      width: 360px;
+      border-radius: 6px;
+      margin: auto;
+    "
+  >
     <h5 id="modalTitle">Confirmar</h5>
     <p id="modalBody">¿Seguro?</p>
-    <div style="text-align: right;">
+    <div style="text-align: right">
       <button id="modalCancel" class="btn">Cancelar</button>
       <button id="modalConfirm" class="btn btn-danger">Confirmar</button>
     </div>
@@ -60,36 +94,36 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('confirmModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-    const modalCancel = document.getElementById('modalCancel');
-    const modalConfirm = document.getElementById('modalConfirm');
+  document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("confirmModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalCancel = document.getElementById("modalCancel");
+    const modalConfirm = document.getElementById("modalConfirm");
 
     let currentAction = null;
     let currentId = null;
 
-    function showModal(title, body, confirmText = 'Confirmar') {
+    function showModal(title, body, confirmText = "Confirmar") {
       modalTitle.textContent = title;
       modalBody.textContent = body;
       modalConfirm.textContent = confirmText;
-      modal.style.display = 'flex';
+      modal.style.display = "flex";
     }
     function hideModal() {
-      modal.style.display = 'none';
+      modal.style.display = "none";
       currentAction = null;
       currentId = null;
     }
 
-    modalCancel.addEventListener('click', hideModal);
+    modalCancel.addEventListener("click", hideModal);
 
-    modalConfirm.addEventListener('click', async () => {
+    modalConfirm.addEventListener("click", async () => {
       if (!currentAction) return hideModal();
       try {
         const resp = await fetch(currentAction, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' }
+          method: "POST",
+          headers: { Accept: "application/json" },
         });
 
         const data = await resp.json().catch(() => ({}));
@@ -97,40 +131,51 @@
         if (resp.ok && data.success) {
           location.reload();
         } else {
-          alert('Error: ' + (data.error || 'Problema desconocido'));
+          alert("Error: " + (data.error || "Problema desconocido"));
         }
       } catch (err) {
-        alert('Error en la petición: ' + err.message);
+        alert("Error en la petición: " + err.message);
       } finally {
         hideModal();
       }
     });
 
     // Delegación de clicks sobre la tabla
-    const table = document.querySelector('table');
+    const table = document.querySelector("table");
     if (!table) return;
 
-    table.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
+    table.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
       if (!btn) return;
-      const tr = btn.closest('tr');
-      const id = tr ? tr.getAttribute('data-id') : null;
+      const tr = btn.closest("tr");
+      const id = tr ? tr.getAttribute("data-id") : null;
 
-      // Preferimos usar el atributo data-action que definimos en los botones
-      const actionUrl = btn.getAttribute('data-action');
+      const actionUrl = btn.getAttribute("data-action");
 
-      if (btn.classList.contains('btn-soft-delete')) {
+      if (btn.classList.contains("btn-soft-delete")) {
         currentAction = actionUrl || `/producto/soft_delete/${id}`;
         currentId = id;
-        showModal('Inactivar producto', '¿Deseas marcar este producto como INACTIVO?', 'Inactivar');
-      } else if (btn.classList.contains('btn-restore')) {
+        showModal(
+          "Inactivar producto",
+          "¿Deseas marcar este producto como INACTIVO?",
+          "Inactivar"
+        );
+      } else if (btn.classList.contains("btn-restore")) {
         currentAction = actionUrl || `/producto/restore/${id}`;
         currentId = id;
-        showModal('Restaurar producto', '¿Deseas restaurar este producto?', 'Restaurar');
-      } else if (btn.classList.contains('btn-hard-delete')) {
+        showModal(
+          "Restaurar producto",
+          "¿Deseas restaurar este producto?",
+          "Restaurar"
+        );
+      } else if (btn.classList.contains("btn-hard-delete")) {
         currentAction = actionUrl || `/producto/hard_delete/${id}`;
         currentId = id;
-        showModal('Eliminar definitivamente', 'Esta acción es irreversible. ¿Deseas continuar?', 'Eliminar');
+        showModal(
+          "Eliminar definitivamente",
+          "Esta acción es irreversible. ¿Deseas continuar?",
+          "Eliminar"
+        );
       }
     });
   });

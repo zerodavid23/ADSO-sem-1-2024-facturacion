@@ -20,7 +20,7 @@ class productosController(FlaskController):
 @app.route('/formulario_producto', methods=['GET','POST'])
 @app.route('/formulario_producto/<int:id_producto>', methods=['GET','POST'])
 def formulario_producto(id_producto=None):
-    # Evitar múltiples definiciones: asegúrate de tener solo este bloque en el proyecto.
+   
     categorias = Categoria.traer_categorias()
     producto = None
 
@@ -29,10 +29,10 @@ def formulario_producto(id_producto=None):
         producto = db_session.get(Producto, id_producto)
         if producto is None:
             flash('Producto no encontrado', 'danger')
-            # NO redirijas a la misma ruta -> redirigir a lista_productos
+          
             return redirect(url_for('lista_productos'))
 
-    # POST -> crear o actualizar
+    #  crear o actualizar los productos
     if request.method == 'POST':
         nombre = (request.form.get('nombre') or '').strip()
         descripcion = (request.form.get('descripcion') or '').strip()
@@ -41,12 +41,10 @@ def formulario_producto(id_producto=None):
         unidad_medida = (request.form.get('unidad_medida') or '').strip()
         categoria_id = request.form.get('categoria') or None
 
-        # validaciones mínimas
+        
         if not nombre:
             flash('El nombre es obligatorio', 'danger')
-            return redirect(request.url)   # redirigir a la misma URL está OK en POST -> GET,
-                                           # pero **no** a la misma sin hacer cambios en GET
-
+            return redirect(request.url)   
         try:
             cantidad_val = float(cantidad) if cantidad not in (None, '') else None
         except ValueError:
@@ -59,7 +57,7 @@ def formulario_producto(id_producto=None):
             flash('Precio inválido', 'danger')
             return redirect(request.url)
 
-        # Actualizar
+        # Actualizar el producto 
         if producto:
             producto.nombre_producto = nombre
             producto.descripcion = descripcion
@@ -90,5 +88,5 @@ def formulario_producto(id_producto=None):
             flash(f'Error al crear producto: {e}', 'danger')
             return redirect(request.url)
 
-    # GET -> mostrar formulario (no redirigir a la misma URL)
+
     return render_template('formulario_producto.html', producto=producto, categorias=categorias)

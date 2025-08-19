@@ -21,7 +21,7 @@
       <td>{{ usuario.correo }}</td>
       <td>{{ usuario.nombre_persona }}</td>
       <td>{{ usuario.nombre_usuario }}</td>
-      <td>{{ usuario.contraseña }}</td>
+      <td>{{ usuario.contraseña[:10] }}</td>
       <td>{{ usuario.tipo_usuario }}</td>
       <td class="estado">{{ 'Activo' if usuario.activo else 'Inactivo' }}</td>
       <td>
